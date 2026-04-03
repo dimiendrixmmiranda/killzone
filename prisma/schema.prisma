@@ -1,0 +1,219 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(cuid())
+  name      String?
+  email     String    @unique
+  password  String
+  phone     String?
+  nickname  String?   @unique
+  githubId  String?   @unique
+  nick      String?   @unique
+  image     String?
+  createdAt DateTime  @default(now())
+  comments  Comment[]
+  votes     Vote[]
+  playerVotes PlayerVote[]
+}
+
+model Tag {
+  id   String @id @default(cuid())
+  nome String @unique
+  news News[] @relation("NewsToTag")
+}
+
+model News {
+  id                String    @id @default(cuid())
+  slug              String    @unique
+  titulo            String
+  resumo            String
+  thumbnail         String
+  dataPublicacao    DateTime  @default(now())
+  autor             String
+  conteudo          Json?
+  sobreOJogo        Json?
+  jogoId            String?
+  campeonatoId      String?
+  partidaId         String?
+  timesRelacionados Json?
+  comentarios       Comment[]
+  tags              Tag[]     @relation("NewsToTag")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User @relation(fields: [userId], references: [id])
+
+  newsId String?
+  news   News? @relation(fields: [newsId], references: [id])
+
+  videoId String?
+  video   Video? @relation(fields: [videoId], references: [id])
+}
+
+model Campeonato {
+  id        String   @id @default(cuid())
+  nome      String
+  jogoId    String
+  tipo      String
+  tier      String
+  organizador String
+  slugId    String
+
+  inicio    DateTime
+  fim       DateTime
+  local     String
+
+  imagem    String
+  trofeu    String
+
+  formato   String
+  terceiroLugar Boolean
+
+  timesIds                 String[]
+  campeonatosRelacionados  String[]
+  premiacoes               Json?
+
+  mvp       String?
+
+  createdAt DateTime @default(now())
+}
+
+model Video {
+  id     String   @id @default(cuid())
+  titulo String
+  tipo   String
+  url    String
+  data   DateTime
+  comentarios Comment[]
+}
+
+model Ranking {
+  id        String   @id @default(cuid())
+  title     String
+  startDate DateTime
+  endDate   DateTime
+  status    String   // "OPEN" | "CLOSED"
+
+  createdAt DateTime @default(now())
+
+  teams     RankingTeam[]
+  votes     Vote[]
+  results   RankingResult[]
+}
+
+model RankingTeam {
+  id        String @id @default(cuid())
+  rankingId String
+  teamId    String
+
+  ranking Ranking @relation(fields: [rankingId], references: [id])
+
+  @@unique([rankingId, teamId])
+}
+
+model Vote {
+  id        String   @id @default(cuid())
+  userId    String
+  rankingId String
+  createdAt DateTime @default(now())
+
+  user     User    @relation(fields: [userId], references: [id])
+  ranking  Ranking @relation(fields: [rankingId], references: [id])
+
+  positions VotePosition[]
+
+  @@unique([userId, rankingId]) // 🔥 garante 1 voto por usuário
+}
+
+model VotePosition {
+  id       String @id @default(cuid())
+  voteId   String
+  teamId   String
+  position Int
+
+  vote Vote @relation(fields: [voteId], references: [id])
+
+  @@unique([voteId, position]) // não pode repetir posição
+}
+
+model RankingResult {
+  id           String @id @default(cuid())
+  rankingId    String
+  teamId       String
+  finalPosition Int
+  points        Int
+
+  ranking Ranking @relation(fields: [rankingId], references: [id])
+
+  @@unique([rankingId, teamId])
+}
+
+model Jogador {
+  id           String @id @default(cuid())
+  nome         String
+  idade        String
+  apelido      String
+  pais         String
+  imagem       String
+  jogoId       String
+  timeAtual    String
+  status       String
+  sinergia     Int
+  highlights   String
+  papel        String
+  estilo       String
+
+  // 🔥 ADICIONE ISSO
+  voteOptions PlayerVoteOption[]
+  votes       PlayerVote[]
+}
+
+model PlayerVoteSession {
+  id        String   @id @default(cuid())
+  title     String
+  startDate DateTime
+  endDate   DateTime
+  status    String   // "OPEN" | "CLOSED"
+
+  createdAt DateTime @default(now())
+
+  players   PlayerVoteOption[]
+  votes     PlayerVote[]
+}
+
+model PlayerVoteOption {
+  id        String @id @default(cuid())
+  sessionId String
+  playerId  String
+
+  session PlayerVoteSession @relation(fields: [sessionId], references: [id])
+  player  Jogador           @relation(fields: [playerId], references: [id])
+
+  @@unique([sessionId, playerId])
+}
+
+model PlayerVote {
+  id        String   @id @default(cuid())
+  userId    String
+  sessionId String
+  playerId  String
+  createdAt DateTime @default(now())
+
+  user    User              @relation(fields: [userId], references: [id])
+  session PlayerVoteSession @relation(fields: [sessionId], references: [id])
+  player  Jogador           @relation(fields: [playerId], references: [id])
+
+  @@unique([userId, sessionId])
+}

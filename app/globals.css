@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+@import "primereact/resources/themes/lara-dark-indigo/theme.css";
+@import "primereact/resources/primereact.min.css";
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -10,6 +13,22 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-azul-escuro: #090a41;
+  --color-azul: #0B2769;
+  --color-laranja: #dd831f;
+  --color-magenta: #FF246A;
+  --color-piscina: #0f94a8;
+
+  --font-sans: var(--font-geist-sans);
+  --font-heading: var(--font-teko);
+  --font-main: var(--font-lato);
+  --font-titulo: var(--font-lato);
+
+  --breakpoint-sm: 425px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1440px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +41,110 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+@layer utilities {
+  .font-heading {
+    font-family: var(--font-teko);
+  }
+
+  .font-main {
+    font-family: var(--font-titulo);
+  }
+}
+
+/* Fundo do dialog */
+.dialog-jogador .p-dialog-content {
+  background-color: #032958;
+  /* zinc-900 */
+  color: #e5e7eb;
+}
+
+/* Header */
+.dialog-jogador .p-dialog-header {
+  background-color: #032958;
+}
+
+
+.bracket {
+  display: flex;
+  gap: 80px;
+  overflow-x: auto;
+  padding: 20px 0;
+  align-items: flex-start;
+}
+
+.round {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  opacity: .4;
+  transition: .3s;
+}
+
+.round.highlight {
+  opacity: 1;
+  transform: scale(1.03);
+}
+
+.match {
+  width: 180px;
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  padding: 6px;
+  position: relative;
+}
+
+/* linha horizontal */
+.match::after {
+  content: "";
+  position: absolute;
+  right: -40px;
+  top: 50%;
+  width: 40px;
+  height: 2px;
+  background: #d1d5db;
+}
+
+.team {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+
+.dialogMVP .p-dialog-header{
+  background: orangered!important;
+}
+.dialogMVP .p-dialog-content{
+  background-color: orangered!important;
+}
+
+
+.teste::before{
+  content: '';
+  position: absolute;
+  top: -5px;
+  right: -8px;
+  height: 110%;
+  width: 15px;
+  background-color: #090a41;
+  transform: rotate(15deg);
+}
+.teste2::after{
+  content: '';
+  position: absolute;
+  top: 0px;
+  left: -7px;
+  height: 110%;
+  width: 20px;
+  z-index: -10;
+  background-color: #090a41;
+  transform: rotate(15deg);
+}
+
+
+.p-sidebar-header{
+  padding-bottom: 0!important;
 }

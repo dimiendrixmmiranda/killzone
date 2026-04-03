@@ -1,0 +1,164 @@
+'use client'
+import { IMAGEM_TIME_DEFAULT } from "@/src/assets/imagens";
+import { Time } from "@/src/domain/Time";
+import { getCampeonatoById, getClassificacaoDobleEliminationPlayoff, getClassificacaoDoubleElimination, getClassificacaoFinalSuica, getClassificacaoPlayoffs } from "@/src/services/campeonato.service";
+import { getTeamById } from "@/src/services/team.service";
+import Image from "next/image";
+import { useEffect, useMemo, useState } from "react";
+interface ClassificacaoFinalProps {
+    idCampeonato: string
+}
+
+interface Resultado {
+    partidas: number
+    encerrouParticipacao: boolean
+    resultadoSuica: string
+    timeId: string
+    posicao: number
+}
+
+export default function ClassificacaoFinal({ idCampeonato }: ClassificacaoFinalProps) {
+    const campeonato = getCampeonatoById(idCampeonato)
+
+    const [classificacao, setClassificacao] = useState<Resultado[]>([])
+
+    useEffect(() => {
+        switch (campeonato?.formato) {
+            case 'suico':
+                return (
+                    setClassificacao(getClassificacaoFinalSuica(campeonato))
+                )
+            case 'playoff':
+                return (
+                    setClassificacao(getClassificacaoPlayoffs(idCampeonato))
+                )
+            case 'gsl-format':
+                return (
+                    setClassificacao(getClassificacaoDoubleElimination(campeonato))
+                )
+            case 'gsl-format-playoff':
+                return (
+                    setClassificacao(getClassificacaoDobleEliminationPlayoff(idCampeonato))
+                )
+
+            default:
+                break;
+        }
+    }, [campeonato, idCampeonato])
+    
+    return (
+        <div className="bg-zinc-900 p-6 text-white flex flex-col gap-4 justify-center items-center mt-4">
+            <h3 className="font-heading text-3xl self-start">Classificação Final</h3>
+            <div className="flex flex-col gap-5 w-full">
+                <div className="flex flex-col gap-2 md:grid md:grid-cols-2 lg:grid-cols-4">
+                    {
+                        classificacao.map((timeClassificacao, i) => {
+                            const time: Time | undefined = getTeamById(timeClassificacao.timeId)
+                            let posicaoGrid = ''
+
+                            switch (timeClassificacao.resultadoSuica) {
+                                case '1º':
+                                    posicaoGrid = 'col-start-1 col-end-3'
+                                    break;
+                                case '2º':
+                                    posicaoGrid = 'col-start-3 col-end-5'
+                                    break;
+                                case '1º/2º':{
+                                    const primeiros = classificacao.filter(t => t.resultadoSuica === '1º/2º')
+
+                                    const indexDentroDoGrupo = primeiros.findIndex(t => t.timeId === timeClassificacao.timeId)
+
+                                    if (indexDentroDoGrupo === 0) {
+                                        posicaoGrid = 'lg:col-start-1 lg:col-end-3'
+                                    } else if (indexDentroDoGrupo === 1) {
+                                        posicaoGrid = 'lg:col-start-3 lg:col-end-5'
+                                    }
+                                    break;
+                                }
+                                case '3º/4º':
+                                    {
+                                        const primeiros = classificacao.filter(t => t.resultadoSuica === '3º/4º')
+    
+                                        const indexDentroDoGrupo = primeiros.findIndex(t => t.timeId === timeClassificacao.timeId)
+    
+                                        if (indexDentroDoGrupo === 0) {
+                                            posicaoGrid = 'lg:col-start-1 lg:col-end-3'
+                                        } else if (indexDentroDoGrupo === 1) {
+                                            posicaoGrid = 'lg:col-start-3 lg:col-end-5'
+                                        }
+                                        break;
+                                    }
+
+                                default:
+                                    break;
+                            }
+
+                            return (
+                                <div key={i} className={`${posicaoGrid}`} style={{textShadow: '1px 1px 2px black'}}>
+                                    {
+                                        timeClassificacao.resultadoSuica === '-' || timeClassificacao.resultadoSuica === '' ? (
+                                            <div className={`bg-zinc-800 text-white p-2 flex flex-col justify-center items-center justify-self-center rounded-xl opacity-70 w-full h-full`}>
+                                                <span>{i + 1}º</span>
+                                                <div className="relative w-22 h-22">
+                                                    <Image
+                                                        alt="imagem"
+                                                        src={IMAGEM_TIME_DEFAULT}
+                                                        fill
+                                                        className="object-contain"
+                                                    />
+                                                </div>
+                                                <p className="text-lg font-bold">
+                                                    TBD
+                                                </p>
+                                                <span className="text-xs">
+                                                    —
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <div
+                                                className={`
+                                                    text-white p-4 flex flex-col
+                                                    justify-center items-center justify-self-center
+                                                    rounded-xl
+                                                    relative
+                                                    w-full h-full
+                                                    ${campeonato?.formato === 'gsl-format' && i < 6 ? 'bg-green-600' : ''}
+                                                    ${campeonato?.formato === 'gsl-format' && i >= 6 ? 'bg-red-600' : ''}
+                                                    ${campeonato?.formato === 'suico' && i < 8 ? 'bg-green-600' : ''}
+                                                    ${campeonato?.formato === 'suico' && i >= 8 ? 'bg-red-600' : ''}
+                                                `}
+                                            >
+                                                <div className="flex flex-col justify-center items-center gap-1 xl:flex-row xl:w-full">
+                                                    {/* logo */}
+                                                    <div className="relative w-22 h-22">
+                                                        <Image
+                                                            alt={`Logo ${time?.nome}`}
+                                                            src={time?.imagem || IMAGEM_TIME_DEFAULT}
+                                                            fill
+                                                            className="object-contain"
+                                                        />
+                                                    </div>
+
+                                                    {/* nome */}
+                                                    <p className="font-bold capitalize text-center leading-tight md:my-auto xl:text-2xl">
+                                                        {time?.nome.replaceAll('-', ' ')}
+                                                    </p>
+                                                </div>
+                                                <span className="text-sm font-semibold md:text-lg">
+                                                    {timeClassificacao.resultadoSuica}
+                                                </span>
+                                                <span className="text-[10px] text-emerald-400 font-semibold mt-1">
+                                                    R$1000
+                                                </span>
+                                            </div>
+                                        )
+                                    }
+                                </div>
+                            )
+                        })
+                    }
+                </div>
+            </div>
+        </div >
+    )
+}
