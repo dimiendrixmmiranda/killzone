@@ -94,9 +94,15 @@ export default function Campeonato({ containerCampeonato, containerMeses }: Camp
         const situacaoA = getSituacaoCampeonato(a.inicio, a.fim)
         const situacaoB = getSituacaoCampeonato(b.inicio, b.fim)
 
-        return ORDEM_SITUACAO[situacaoA] - ORDEM_SITUACAO[situacaoB]
-    })
+        const ordemSituacao = ORDEM_SITUACAO[situacaoA] - ORDEM_SITUACAO[situacaoB]
 
+        if (ordemSituacao !== 0) {
+            return ordemSituacao
+        }
+
+        // 🔥 aqui entra a ordenação por data
+        return new Date(a.inicio).getTime() - new Date(b.inicio).getTime()
+    })
     return (
         <div className="flex flex-col gap-6">
 

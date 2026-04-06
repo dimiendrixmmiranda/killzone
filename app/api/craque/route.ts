@@ -26,20 +26,22 @@ export async function POST(req: Request) {
             )
         }
 
+        const start = new Date(date)
+        const end = new Date(date)
+
+        end.setDate(end.getDate() + 7) // +7 dias, por exemplo
+
         const session = await prisma.playerVoteSession.create({
             data: {
                 title,
-                startDate: new Date(date),
-                endDate: new Date(date),
+                startDate: start,
+                endDate: end,
                 status: "OPEN",
                 players: {
                     create: players.map((playerId: string) => ({
                         playerId
                     }))
                 }
-            },
-            include: {
-                players: true
             }
         })
 

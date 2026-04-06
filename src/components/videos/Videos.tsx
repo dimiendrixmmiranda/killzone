@@ -213,6 +213,52 @@ export default function Videos() {
         setInputComentario("")
     }
 
+    if (videos.length <= 0) {
+        return (
+            <div className="bg-zinc-950 p-4 mt-4 flex flex-col gap-4">
+                <h2 className="w-full h-6 bg-zinc-600"></h2>
+                <Swiper
+                    modules={[Pagination, Navigation, Autoplay]}
+                    slidesPerView={1}
+                    loop
+                    autoplay={{
+                        delay: 5000,
+                        disableOnInteraction: false,
+                    }}
+                    spaceBetween={15}
+                    breakpoints={{
+                        425: {
+                            slidesPerView: 2
+                        },
+                        768: {
+                            slidesPerView: 3
+                        },
+                        1024: {
+                            slidesPerView: 4
+                        },
+                        1440: {
+                            slidesPerView: 6
+                        }
+                    }}
+                    pagination={{ clickable: true }}
+                    navigation
+                    className="h-[340px] w-full"
+                >
+                    {Array.from({ length: 6 }).map((_, i) => {
+                        return (
+                            <SwiperSlide
+                                key={i}
+                                className="bg-zinc-600 rounded-xl relative w-full h-full max-w-62.5 mx-2"
+                            >
+                                <div className="bg-zinc-600 text-black grid grid-rows-[1fr_30px] h-full w-full rounded-xl relative"></div>
+                            </SwiperSlide>
+                        )
+                    })}
+                </Swiper>
+            </div>
+        )
+    }
+
     return (
         <div className="bg-zinc-950 p-4 mt-4 flex flex-col gap-4">
             <h2 className="font-heading text-4xl">
@@ -242,7 +288,7 @@ export default function Videos() {
                     {videos.map((video, i) => (
                         <SwiperSlide key={i}>
                             <div
-                                className="h-[340px] w-[200px] cursor-pointer relative mx-auto rounded-lg overflow-hidden m-1 w-full h-full md:w-[230px] md:h-[370px] 2xl:w-[260px] 2xl:h-[420px] "
+                                className="h-[340px] w-[200px] cursor-pointer relative mx-auto rounded-lg overflow-hidden m-1 md:w-[230px] md:h-[370px] 2xl:w-[260px] 2xl:h-[420px] "
                                 style={{ boxShadow: '0 0 3px 2px black' }}
                                 onClick={() => {
                                     setVideoAtual(video)

@@ -204,7 +204,7 @@ export default function RankingDaComunidade() {
 
     useEffect(() => {
         async function loadRanking() {
-            const res = await fetch("/api/rankingComunidade")
+            const res = await fetch("/api/rankingComunidade/active")
             const data = await res.json()
 
             setRanking(data)
@@ -254,6 +254,11 @@ export default function RankingDaComunidade() {
             }
 
             setRankingId(data.id)
+
+            if (data.status === "CLOSED") {
+                setAlreadyVoted(true) // ou melhor: setIsClosed(true)
+                return
+            }
 
             setRankingState({
                 timesDisponiveis: data.teams,
@@ -343,6 +348,40 @@ export default function RankingDaComunidade() {
         setAlreadyVoted(true)
         alert("Voto enviado!")
     }
+
+    // Ajustar
+    // if (timesDisponiveis.length <= 0 && alreadyVoted) {
+    //     return (
+    //         <div className="bg-zinc-950 p-4 mt-4 flex flex-col gap-4">
+    //             <h2 className="w-full h-6 bg-zinc-600"></h2>
+    //             <div className="flex flex-col gap-2">
+    //                 <p className="w-full h-4 bg-zinc-600"></p>
+    //                 <p className="w-full h-4 bg-zinc-600"></p>
+    //             </div>
+    //             <div className="flex flex-col gap-6 md:grid md:grid-cols-2">
+    //                 <ul className="flex flex-col gap-2">
+    //                     {
+    //                         Array.from({ length: 10 }).map((_, i) => {
+    //                             return (
+    //                                 <li key={i} className="w-full h-[55px] bg-zinc-600 rounded-lg"></li>
+    //                             )
+    //                         })
+    //                     }
+    //                 </ul>
+    //                 <ul className="flex flex-col gap-2">
+    //                     {
+    //                         Array.from({ length: 10 }).map((_, i) => {
+    //                             return (
+    //                                 <li key={i} className="w-full h-[55px] bg-zinc-600 rounded-lg"></li>
+    //                             )
+    //                         })
+    //                     }
+    //                 </ul>
+    //             </div>
+    //         </div>
+    //     )
+    // }
+
     return (
         <div className="bg-orange-600 flex flex-col gap-4 p-4 mt-4 md:grid md:grid-cols-2">
             <div className="col-start-1 col-end-3" style={{ textShadow: '1px 1px 2px black' }}>
@@ -363,32 +402,26 @@ export default function RankingDaComunidade() {
                 {
                     alreadyVoted ? (
                         <div className="col-start-1 col-end-3 flex flex-col gap-4 md:grid md:grid-cols-2">
-                            <div className="flex flex-col gap-2 md:col-start-1 md:col-end-3" style={{ textShadow: '1px 1px 2px black' }}>
-                                <h3 className="font-heading text-2xl whitespace-nowrap">Resultado parcial até o momento:</h3>
-                                {ranking ? (
-                                    <div className="flex flex-col justify-center text-center items-center gap-4 w-full md:flex-row md:justify-around">
-                                        <Countdown endDate={ranking.endDate} />
-                                        <div className="">
-                                            <span>
-                                                {new Date(ranking.startDate).toLocaleDateString('pt-BR', {
-                                                    day: 'numeric',
-                                                    month: 'long',
-                                                    year: 'numeric'
-                                                })}
-                                            </span>
-                                            {" à "}
-                                            <span>
-                                                {new Date(ranking.endDate).toLocaleDateString('pt-BR', {
-                                                    day: 'numeric',
-                                                    month: 'long',
-                                                    year: 'numeric'
-                                                })}
-                                            </span>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <span>Carregando ranking...</span>
-                                )}
+                            <div className="flex flex-col justify-center items-center col-start-1 col-end-3 md:flex-row md:justify-between">
+                                <h3 className="font-heading text-2xl">Resultado até o momento:</h3>
+                                <Countdown endDate={ranking.endDate} />
+                                <div className="">
+                                    <span className="font-heading text-2xl">
+                                        {new Date(ranking.startDate).toLocaleDateString('pt-BR', {
+                                            day: 'numeric',
+                                            month: 'long',
+                                            year: 'numeric'
+                                        })}
+                                    </span>
+                                    {" à "}
+                                    <span className="font-heading text-2xl">
+                                        {new Date(ranking.endDate).toLocaleDateString('pt-BR', {
+                                            day: 'numeric',
+                                            month: 'long',
+                                            year: 'numeric'
+                                        })}
+                                    </span>
+                                </div>
                             </div>
 
                             <ul className="flex flex-col gap-2 col-start-1 col-end-3 md:grid md:grid-cols-2">

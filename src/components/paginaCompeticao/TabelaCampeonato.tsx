@@ -14,12 +14,14 @@ interface TabelaDoCampeonatoProps {
 
 export default function TabelaDoCampeonato({ campeonato }: TabelaDoCampeonatoProps) {
     const tabela = getTabelaByCampeonatoId(campeonato)
-
+    
     const partidas = getPartidasByCampeonato(campeonato.id)
     const partidasQuartas = getPartidasByCampeonato(campeonato.id).filter(partida => partida.fase === 'quartas')
     const partidasSemifinal = getPartidasByCampeonato(campeonato.id).filter(partida => partida.fase === 'semifinal')
     const partidaTerceiroLugar = getPartidasByCampeonato(campeonato.id).filter(partida => partida.fase === 'terceiro-lugar')
     const partidaFinal = getPartidasByCampeonato(campeonato.id).filter(partida => partida.fase === 'final')
+
+    console.log(tabela)
 
     function formatarData(data?: Date) {
         if (!data) return ""
@@ -789,7 +791,7 @@ export default function TabelaDoCampeonato({ campeonato }: TabelaDoCampeonatoPro
     }
 
     return (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 w-full">
             <h3 className="font-heading text-3xl">Tabela Do Campeonato</h3>
             {
                 campeonato?.formato && identificarTipoCampeonato(campeonato?.formato, campeonato)

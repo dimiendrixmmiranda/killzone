@@ -13,6 +13,8 @@ import { FaPlus } from "react-icons/fa";
 import Comentario from "@/src/components/comentario/Comentario";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
+import { IMAGEM_USER_DEFAULT } from '@/src/assets/imagens';
+import Image from 'next/image';
 
 
 
@@ -161,18 +163,15 @@ export default function Page() {
         console.log(data.url)
     }
 
-    console.log(comentarios)
-
     return (
         <Template>
             <div className="p-4 text-black max-w-360 mx-auto flex flex-col gap-4 pb-16 md:pb-0 md:grid md:grid-cols-[260px_1fr] md:gap-4 lg:grid-cols-[300px_1fr] lg:gap-8 lg:p-8">
                 <div className="flex flex-col justify-center items-center">
                     <h2 className="font-heading text-4xl text-center">Bem Vindo {user.nickname}</h2>
                     <div className="relative flex flex-col justify-center items-center max-w-[250px] w-full mx-auto">
-                        <img
-                            src={user.image || "/camp.png"}
-                            className="w-[200px] h-[200px] rounded-full object-cover bg-zinc-900 lg:w-[250px] lg:h-[250px]"
-                        />
+                        <div className="relative w-[200px] h-[200px] rounded-full bg-zinc-300 overflow-hidden lg:w-[250px] lg:h-[250px]">
+                            <Image alt={`${user.name}`} src={user.image || IMAGEM_USER_DEFAULT} fill className='object-cover' />
+                        </div>
                         <div className="absolute bottom-0 right-0">
                             <label
                                 htmlFor="upload"

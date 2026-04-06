@@ -21,6 +21,7 @@ model User {
   comments  Comment[]
   votes     Vote[]
   playerVotes PlayerVote[]
+  pickems   Pickem[] 
 }
 
 model Tag {
@@ -80,6 +81,7 @@ model Campeonato {
 
   formato   String
   terceiroLugar Boolean
+  pickem    Boolean?
 
   timesIds                 String[]
   campeonatosRelacionados  String[]
@@ -88,6 +90,7 @@ model Campeonato {
   mvp       String?
 
   createdAt DateTime @default(now())
+  pickems   Pickem[]
 }
 
 model Video {
@@ -175,9 +178,10 @@ model Jogador {
   papel        String
   estilo       String
 
-  // 🔥 ADICIONE ISSO
   voteOptions PlayerVoteOption[]
   votes       PlayerVote[]
+  
+  transferencias Transferencia[]
 }
 
 model PlayerVoteSession {
@@ -216,4 +220,56 @@ model PlayerVote {
   player  Jogador           @relation(fields: [playerId], references: [id])
 
   @@unique([userId, sessionId])
+}
+
+enum TransferStatus {
+  RUMOR
+  FECHADO
+  FALTA_ASSINAR
+}
+
+enum TransferTipo {
+  TRANSFERENCIA
+  FREE_AGENT
+  BANCO
+  SAIDA
+}
+
+model Transferencia {
+  id String @id @default(cuid())
+
+  jogadorId String
+  jogador   Jogador @relation(fields: [jogadorId], references: [id])
+
+  timeOrigemId String?
+  timeDestinoId String?
+
+  data DateTime
+
+  status TransferStatus
+  tipo   TransferTipo
+
+  valor  Float?
+  moeda  String?
+
+  observacao String?
+
+  createdAt DateTime @default(now())
+}
+
+model Pickem {
+  id             String   @id @default(cuid())
+
+  userId         String
+  campeonatoId   String
+
+  user           User        @relation(fields: [userId], references: [id])
+  campeonato     Campeonato  @relation(fields: [campeonatoId], references: [id])
+
+  picks          Json       // 🔥 aqui vai seu slots
+
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@unique([userId, campeonatoId]) // 1 pickem por usuário por campeonato
 }

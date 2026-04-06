@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Template from "@/src/components/template/Template"
 
 import {
@@ -13,6 +13,9 @@ import { getTeamById } from "@/src/services/team.service"
 import Image from "next/image"
 import { IMAGEM_TIME_DEFAULT } from "@/src/assets/imagens"
 import { getCampeonatoById } from "@/src/services/campeonato.service"
+import { Campeonato } from "@/src/domain/Campeonato"
+import { useParams } from "next/navigation"
+import { useSession } from "next-auth/react"
 
 type TimeID = string
 
@@ -51,16 +54,18 @@ function TimeDraggable({ timeId, onRemove }: { timeId: TimeID, onRemove?: (id: T
             ref={setNodeRef}
             style={style}
             className="
-                max-w-[120px] h-[120px]
-                w-full rounded-lg
+                w-[120px] h-[120px]
+                rounded-lg
                 grid grid-rows-[1fr_15px] gap-1
                 text-black font-bold
                 touch-none z-20 relative
-                bg-orange-400 p-2
+                bg-zinc-800 p-2
                 cursor-pointer
-                md:max-w-[70px] md:h-[70px]
-                lg:max-w-[110px] lg:h-[110px]
-                xl:max-w-[130px] xl:h-[130px]
+                sm:w-[140px] sm:h-[140px]
+                md:w-[80px] md:h-[80px]
+                lg:w-[110px] lg:h-[110px]
+                xl:w-[140px] xl:h-[140px]
+                2xl:w-[150px] 2xl:h-[150px]
             "
         >
             <div
@@ -102,17 +107,24 @@ function SlotDrop({ slot, children }: { slot: Slot, children?: React.ReactNode }
     const { setNodeRef, isOver } = useDroppable({ id: slot.id })
 
     return (
-        <div className="flex flex-col gap-1 w-full">
+        <div className="flex flex-col gap-1 w-full justify-center items-center">
             <div
                 ref={setNodeRef}
                 className={`
-                w-full h-[80px]
+                w-[130px] h-[130px]
                 rounded-lg
                 flex items-center justify-center
                 transition-all z-10
+                md:w-[110px]
+                md:h-[110px]
                 ${isOver ? "bg-azul-escuro border-2 border-white scale-105" : "bg-zinc-800"}
-                lg:h-[120px]
-                xl:h-[160px]
+                lg:w-[140px]
+                lg:h-[140px]
+                xl:w-[170px]
+                xl:h-[170px]
+                2xl:w-[190px]
+                2xl:h-[190px]
+
             `}
             >
                 {children}
@@ -130,44 +142,85 @@ interface PickemClientProps {
 
 
 export default function PickemClient({ idCampeonato }: PickemClientProps) {
-    const campeonato = getCampeonatoById(idCampeonato)
-    const times = campeonato?.timesIds ?? []
+    const [campeonatos, setCampeonatos] = useState<any[]>([])
+    const [campeonatoAtual, setCampeonatoAtual] = useState<Campeonato | null>(null)
+    const [pickemDefinido, setPickemDefinido] = useState<boolean>(false)
 
-    const [state, setState] = useState<RedondoState>({
-        timesDisponiveis: times,
-        slots: [
-            { id: "3-0", tipo: "3-0" },
-            { id: "0-3", tipo: "0-3" },
-            { id: "adv-1", tipo: "advance" },
-            { id: "adv-2", tipo: "advance" },
-            { id: "adv-3", tipo: "advance" },
-            { id: "adv-4", tipo: "advance" },
-            { id: "adv-5", tipo: "advance" },
-            { id: "adv-6", tipo: "advance" },
-            { id: "adv-7", tipo: "advance" }
-        ]
-    })
+    const { data: session } = useSession()
+    const [user, setUser] = useState<any>(undefined)
 
-    function removerTime(timeId: TimeID) {
-        setState(prev => {
-            const slotsAtualizados = prev.slots.map(slot =>
-                slot.timeId === timeId ? { ...slot, timeId: undefined } : slot
+    // 🔹 pegar usuário
+    useEffect(() => {
+        if (session?.user?.email) {
+            fetch("/api/user")
+                .then(res => res.json())
+                .then(data => setUser(data))
+        }
+    }, [session])
+
+    // 🔹 pegar campeonatos
+    useEffect(() => {
+        fetch("/api/campeonatos")
+            .then(res => res.json())
+            .then(setCampeonatos)
+    }, [])
+
+    // 🔹 definir campeonato atual
+    useEffect(() => {
+        const camp = campeonatos.find(c => c.slugId === idCampeonato)
+        if (camp) setCampeonatoAtual(camp)
+    }, [idCampeonato, campeonatos])
+
+    const times = campeonatoAtual?.timesIds ?? []
+
+    // 🔹 STATE (AGORA SÓ SLOTS)
+    const [slots, setSlots] = useState<Slot[]>([
+        { id: "3-0", tipo: "3-0" },
+        { id: "0-3", tipo: "0-3" },
+        { id: "adv-1", tipo: "advance" },
+        { id: "adv-2", tipo: "advance" },
+        { id: "adv-3", tipo: "advance" },
+        { id: "adv-4", tipo: "advance" },
+        { id: "adv-5", tipo: "advance" },
+        { id: "adv-6", tipo: "advance" },
+    ])
+
+    // 🔥 carregar pickem salvo
+    useEffect(() => {
+        async function fetchPickem() {
+            if (!user?.id || !campeonatoAtual?.id) return
+
+            const res = await fetch(
+                `/api/pickem?userId=${user.id}&campeonatoId=${campeonatoAtual.id}`
             )
 
-            const timesDisponiveisAtualizados = prev.timesDisponiveis.includes(timeId)
-                ? prev.timesDisponiveis
-                : [...prev.timesDisponiveis, timeId]
+            const data = await res.json()
 
-            return {
-                ...prev,
-                slots: slotsAtualizados,
-                timesDisponiveis: timesDisponiveisAtualizados
+            setPickemDefinido(false)
+
+            if (data?.picks) {
+                setSlots(data.picks)
+                setPickemDefinido(true)
             }
-        })
+        }
+
+        fetchPickem()
+    }, [user, campeonatoAtual])
+
+    // 🔥 calcular automaticamente
+    const timesUsados = slots.map(s => s.timeId).filter(Boolean) as string[]
+    const timesDisponiveis = times.filter(t => !timesUsados.includes(t))
+
+    function removerTime(timeId: TimeID) {
+        setSlots(prev =>
+            prev.map(slot =>
+                slot.timeId === timeId ? { ...slot, timeId: undefined } : slot
+            )
+        )
     }
 
     function getSlotTime(slotId: string) {
-        return state.slots.find(s => s.id === slotId)?.timeId
+        return slots.find(s => s.id === slotId)?.timeId
     }
 
     function handleDragEnd(event: DragEndEvent) {
@@ -177,29 +230,43 @@ export default function PickemClient({ idCampeonato }: PickemClientProps) {
         const timeId = active.id as TimeID
         const slotId = over.id as string
 
-        setState(prev => {
-            const slots = [...prev.slots]
-            const targetSlotIndex = slots.findIndex(s => s.id === slotId)
-            if (targetSlotIndex === -1) return prev
-            const targetSlot = slots[targetSlotIndex]
+        setSlots(prev => {
+            const newSlots = [...prev]
 
-            const existingSlotIndex = slots.findIndex(s => s.timeId === timeId)
+            const targetIndex = newSlots.findIndex(s => s.id === slotId)
+            if (targetIndex === -1) return prev
 
-            if (existingSlotIndex !== -1) {
-                const oldSlot = slots[existingSlotIndex]
-                const temp = targetSlot.timeId
-                targetSlot.timeId = timeId
-                oldSlot.timeId = temp
+            const existingIndex = newSlots.findIndex(s => s.timeId === timeId)
+
+            if (existingIndex !== -1) {
+                const temp = newSlots[targetIndex].timeId
+                newSlots[targetIndex].timeId = timeId
+                newSlots[existingIndex].timeId = temp
             } else {
-                targetSlot.timeId = timeId
+                newSlots[targetIndex].timeId = timeId
             }
 
-            return { ...prev, slots }
+            return newSlots
         })
     }
 
-    const timesUsados = state.slots.map(s => s.timeId).filter(Boolean) as string[]
-    const timesDisponiveis = state.timesDisponiveis.filter(t => !timesUsados.includes(t))
+    async function salvarPickem() {
+        if (!user?.id || !campeonatoAtual?.id) return
+
+        await fetch("/api/pickem", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                userId: user.id,
+                campeonatoId: campeonatoAtual.id,
+                slots
+            })
+        })
+    }
+
+    console.log(pickemDefinido)
 
     return (
         <Template>
@@ -208,7 +275,7 @@ export default function PickemClient({ idCampeonato }: PickemClientProps) {
                     <div className="flex flex-col gap-8 max-w-[1440px] w-full mx-auto min-h-screen lg:gap-12">
                         <div>
                             <h2 className="font-heading text-6xl text-center capitalize">
-                                Pick’Em Challenge {campeonato?.id.replaceAll('-', ' ')}
+                                Pick’Em Challenge {campeonatoAtual?.slugId?.replaceAll('-', ' ')}
                             </h2>
                             <p className="text-center">
                                 O Pick’Em é um sistema de previsões para torneios em que os participantes escolhem quais equipes terão determinados desempenhos em cada fase da competição. Você precisa selecionar times que irão avançar invictos (3x0), equipes que serão eliminadas sem vencer (0x3) e os times que simplesmente passarão de fase. Cada acerto gera pontos, permitindo comparar seu desempenho com outros fãs ou desbloquear recompensas. A lógica pode ser adaptada para qualquer campeonato: você define as fases, os tipos de previsões e a pontuação para cada acerto, criando um desafio estratégico baseado no conhecimento sobre as equipes e seus resultados.
@@ -216,7 +283,7 @@ export default function PickemClient({ idCampeonato }: PickemClientProps) {
                         </div>
                         <div className="flex flex-col items-center gap-8 lg:gap-10">
                             {/* TIMES DISPONÍVEIS */}
-                            <div className="grid grid-cols-2 md:grid-cols-8 gap-4 w-full justify-items-center md:h-[150px] lg:h-[280px]">
+                            <div className={`grid grid-cols-2 md:grid-cols-8 gap-4 w-full justify-items-center`}>
                                 {timesDisponiveis.map(timeId => (
                                     <TimeDraggable
                                         key={timeId}
@@ -228,9 +295,9 @@ export default function PickemClient({ idCampeonato }: PickemClientProps) {
 
                             {/* 3-0 e 0-3 */}
                             <div className="grid grid-cols-2 gap-4 w-full md:grid-cols-3">
-                                <div className="col-start-1 col-end-2 row-start-1 row-end-2 flex justify-center items-center gap-2 max-w-[280px] mx-auto w-full">
+                                <div className="col-start-1 col-end-2 row-start-1 row-end-2 flex flex-col justify-center items-center">
                                     <p className="text-7xl text-white font-heading">3x0</p>
-                                    <SlotDrop slot={state.slots.find(s => s.id === "3-0")!}>
+                                    <SlotDrop slot={slots.find(s => s.id === "3-0")!}>
                                         {getSlotTime("3-0") && (
                                             <TimeDraggable
                                                 timeId={getSlotTime("3-0")!}
@@ -239,10 +306,18 @@ export default function PickemClient({ idCampeonato }: PickemClientProps) {
                                         )}
                                     </SlotDrop>
                                 </div>
-                                <div></div>
-                                <div className="col-start-2 col-end-3 row-start-1 row-end-2 flex justify-center items-center gap-2 max-w-[280px] mx-auto w-full md:col-start-3 md:col-end-4">
+                                <div className="flex justify-center items-center col-start-1 col-end-3 md:col-start-2 md:col-end-3">
+                                    {
+                                        pickemDefinido ? (
+                                            <h2 className="font-heading text-center text-4xl hidden md:block md:text-5xl lg:text-6xl ">Você ja definiu seus times no Pick'em!</h2>
+                                        ) : (
+                                            <h2 className="font-heading text-center text-4xl hidden md:block md:text-5xl lg:text-6xl ">Você ainda não definiu seus times no Pick'em!</h2>
+                                        )
+                                    }
+                                </div>
+                                <div className="col-start-2 col-end-3 row-start-1 row-end-2 flex flex-col justify-center items-center md:col-start-3 md:col-end-4">
                                     <p className="text-7xl text-white font-heading">0x3</p>
-                                    <SlotDrop slot={state.slots.find(s => s.id === "0-3")!}>
+                                    <SlotDrop slot={slots.find(s => s.id === "0-3")!}>
                                         {getSlotTime("0-3") && (
                                             <TimeDraggable
                                                 timeId={getSlotTime("0-3")!}
@@ -250,12 +325,13 @@ export default function PickemClient({ idCampeonato }: PickemClientProps) {
                                             />
                                         )}
                                     </SlotDrop>
+
                                 </div>
                             </div>
 
                             {/* ADVANCE */}
-                            <div className="grid grid-cols-3 gap-4 w-full justify-items-center md:grid-cols-7">
-                                {state.slots
+                            <div className="grid grid-cols-2 gap-2 w-full justify-items-center md:grid-cols-6">
+                                {slots
                                     .filter(s => s.tipo === "advance")
                                     .map(slot => (
                                         <SlotDrop key={slot.id} slot={slot}>
@@ -269,8 +345,9 @@ export default function PickemClient({ idCampeonato }: PickemClientProps) {
                                     ))}
                             </div>
                         </div>
-                        <div className="flex w-full justify-center items-center">
-                            <button className="font-bold bg-azul-escuro w-full text-center p-2 rounded-md text-xl">Salvar Minhas Escolhas!</button>
+                        <div className="grid grid-cols-2 gap-4 max-w-125 ml-auto mr-4">
+                            <button disabled={pickemDefinido ? true : false} className={`font-bold bg-green-600 w-full text-center p-2 rounded-md text-xl ${pickemDefinido ? 'opacity-40' : 'opacity-100'}`} onClick={salvarPickem} style={{ textShadow: '1px 1px 2px black' }}>Salvar!</button>
+                            <button disabled={pickemDefinido ? true : false} className={`font-bold bg-red-600 w-full text-center p-2 rounded-md text-xl ${pickemDefinido ? 'opacity-40' : 'opacity-100'}`} onClick={salvarPickem} style={{ textShadow: '1px 1px 2px black' }}>Resetar!</button>
                         </div>
                         <div className="hidden">
                             <button>Simule as partidas</button>

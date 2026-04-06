@@ -18,7 +18,7 @@ export default function CarrosselWeb({ time }: CarrosselWebProps) {
         id: `default-${index}`,
         titulo: 'Notícia em breve',
         resumo: 'Estamos preparando novidades.',
-        thumbnail: '/default/news.jpg',
+        thumbnail: '/default/noticia/noticia.png',
         timesRelacionados: [],
         autor: 'Não Informado',
         dataPublicacao: '00/00/0000',

@@ -20,19 +20,34 @@ export function getPartidaById(partidaId: string) {
 export function getProximasPartidas(limit: number = 8) {
     const agora = new Date()
 
-    const proximas = partidas
+    // FUTURAS + EM ANDAMENTO
+    let lista = partidas
         .filter(p => {
             const dataPartida = new Date(p.data)
-            return dataPartida >= agora
+            return dataPartida >= agora || p.situacao === "em-andamento"
         })
         .sort((a, b) => {
             return new Date(a.data).getTime() - new Date(b.data).getTime()
         })
-        .slice(0, limit)
 
+    // SE NÃO TIVER, PEGA AS ÚLTIMAS (PASSADAS)
+    if (lista.length === 0) {
+        lista = partidas
+            .filter(p => {
+                const dataPartida = new Date(p.data)
+                return dataPartida < agora
+            })
+            .sort((a, b) => {
+                return new Date(b.data).getTime() - new Date(a.data).getTime()
+            })
+    }
+
+    const selecionadas = lista.slice(0, limit)
+
+    // AGRUPAMENTO POR DATA
     const agrupadas: { data: string; jogos: typeof partidas }[] = []
 
-    proximas.forEach(partida => {
+    selecionadas.forEach(partida => {
         const data = new Date(partida.data).toISOString().split("T")[0]
 
         let grupo = agrupadas.find(g => g.data === data)

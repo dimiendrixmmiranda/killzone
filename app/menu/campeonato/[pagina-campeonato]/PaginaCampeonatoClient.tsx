@@ -31,6 +31,7 @@ interface Props {
 export default function PaginaCampeonatoClient({ idCampeonato }: Props) {
 
     const [campeonatos, setCampeonatos] = useState<any[]>([])
+    const [campeonatoAtual, setCampeonatoAtual] = useState<Campeonato | null>(null)
 
     useEffect(() => {
         async function fetchCampeonatos() {
@@ -41,8 +42,6 @@ export default function PaginaCampeonatoClient({ idCampeonato }: Props) {
 
         fetchCampeonatos()
     }, [])
-    console.log(campeonatos) /// aparece a lista 
-
 
     useEffect(() => {
         const camp = campeonatos.find(c => c.slugId === idCampeonato)
@@ -50,9 +49,6 @@ export default function PaginaCampeonatoClient({ idCampeonato }: Props) {
     }, [idCampeonato, campeonatos])
 
 
-    const [campeonatoAtual, setCampeonatoAtual] = useState<Campeonato | null>(null)
-
-    console.log(campeonatoAtual)
 
     const timesDoCampeonato = useMemo((): Time[] => {
         if (!campeonatoAtual) return []
@@ -60,9 +56,6 @@ export default function PaginaCampeonatoClient({ idCampeonato }: Props) {
             .map(t => getTeamById(t))
             .filter((time): time is Time => time !== undefined)
     }, [campeonatoAtual])
-
-    console.log(timesDoCampeonato)
-
 
     const partidasDoCampeonato = useMemo((): Partida[] => {
         if (!campeonatoAtual) return []
@@ -86,9 +79,12 @@ export default function PaginaCampeonatoClient({ idCampeonato }: Props) {
         <Template>
             <CabecalhoCampeonato campeonato={campeonatoAtual} />
             <div className="text-black p-4 max-w-360 mx-auto flex flex-col gap-8">
-                <div className="flex flex-col items-end gap-4 md:grid md:grid-cols-[300px_1fr] lg:grid-cols-[300px_1fr_1fr] xl:grid-cols-[300px_1fr_1fr]">
-                    <div className="relative mt-auto w-full h-100 self-center justify-self-center md:h-106.25">
-                        <Image alt={`${campeonatoAtual?.nome}`} src={campeonatoAtual?.trofeu || IMAGEM_TROFEU_DEFAULT} fill className="object-contain" />
+                <div className="flex flex-col items-end gap-4 md:grid md:grid-cols-[300px_1fr] lg:grid-cols-[300px_1fr_1fr] xl:grid-cols-[300px_2fr_1fr] xl:gap-10">
+                    <div className="w-full h-full">
+                        <h3 className="font-heading text-3xl md:col-start-1 md:col-end-3">Troféu</h3>
+                        <div className="relative mt-auto w-full h-100 self-center justify-self-center md:h-106.25">
+                            <Image alt={`${campeonatoAtual?.nome}`} src={campeonatoAtual?.trofeu || IMAGEM_TROFEU_DEFAULT} fill className="object-contain" />
+                        </div>
                     </div>
                     <EquipesParticipantes times={timesDoCampeonato} />
                     <MVPCompeticao campeonato={campeonatoAtual} />
@@ -96,11 +92,15 @@ export default function PaginaCampeonatoClient({ idCampeonato }: Props) {
                 <DadosDoCampeonato campeonato={campeonatoAtual} />
                 <JogosDoCampeonato partidas={partidasDoCampeonato} />
                 <CampeonatoRelacionado campeonatoAtual={campeonatoAtual} />
-                <div className="xl:grid xl:grid-cols-[1fr_auto] xl:gap-8">
+                <div className="xl:grid xl:grid-cols-[1fr_auto] xl:gap-12">
                     <TabelaDoCampeonato campeonato={campeonatoAtual} />
                     <NoticiasDoCampeonato />
                 </div>
-                <BannerPickem idCampeonato={idCampeonato} />
+                {
+                    campeonatoAtual.pickem? (
+                        <BannerPickem idCampeonato={campeonatoAtual.slugId!} />
+                    ) : ('')
+                }
                 <EstatisticasDosJogadores idCampeonato={idCampeonato} />
                 <ClassificacaoFinal idCampeonato={idCampeonato} />
                 {/* <Comentario /> */}

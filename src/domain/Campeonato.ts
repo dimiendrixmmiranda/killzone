@@ -17,6 +17,7 @@ export interface Campeonato {
     trofeu: string
     premiacoes: Premiacao[]
     terceiroLugar: boolean
+    pickem?: boolean
     // formato
     campeonatosRelacionados?: string[]
     formato: 'suico' | 'playoff' | 'gsl-format' | 'gsl-format-playoff'

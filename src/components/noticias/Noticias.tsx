@@ -74,8 +74,6 @@ export default function Noticias({ time }: NoticiasProps) {
         fetchNews()
     }, [time])
 
-    console.log(noticiasFiltradas)
-
     return (
         <div className="flex flex-col w-full mt-4 gap-2 lg:gap-4" ref={topRef}>
             <div className="grid grid-cols-4 gap-1 w-full">

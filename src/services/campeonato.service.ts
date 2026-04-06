@@ -9,12 +9,165 @@ import { Noticia } from "../domain/Noticia";
 import { Partida } from "../domain/Partida";
 import { getPartidasByCampeonato } from "./partidas.service";
 
-type ClassificacaoFinalItem = {
+const TODOS_MAPAS = [
+    "nuke",
+    "inferno",
+    "dust2",
+    "mirage",
+    "overpass",
+    "ancient",
+    "anubis"
+]
+
+export interface LinhaTabela {
     timeId: string
-    posicao: number
-    eliminadoNaFaseId?: string
-    eliminadoEm?: number // ordem cronológica
+    pontos: number
+
+    jogos: number
+    vitorias: number
+    derrotas: number
+
+    mapasGanhos: number
+    mapasPerdidos: number
+
+    roundsGanhos: number
+    roundsPerdidos: number
+
+    saldoMapas: number
+    saldoRounds: number
 }
+
+export function getTabelaByCampeonatoId(campeonato: Campeonato): LinhaTabela[] {
+
+    if (!campeonato.slugId) return []
+
+    const partidas = getPartidasByCampeonato(campeonato?.slugId)
+
+    const timesIds = campeonato.timesIds
+
+    const tabela: Record<string, LinhaTabela> = {}
+
+    // inicializa tabela
+    timesIds?.forEach(timeId => {
+        tabela[timeId] = {
+            timeId,
+            pontos: 0,
+            jogos: 0,
+            vitorias: 0,
+            derrotas: 0,
+
+            mapasGanhos: 0,
+            mapasPerdidos: 0,
+
+            roundsGanhos: 0,
+            roundsPerdidos: 0,
+
+            saldoMapas: 0,
+            saldoRounds: 0
+        }
+    })
+
+    partidas.forEach(partida => {
+
+        if (partida.situacao !== "finalizado") return
+
+        const timeA = tabela[partida.timeAId]
+        const timeB = tabela[partida.timeBId]
+
+        if (!timeA || !timeB) return
+
+        // jogos
+        timeA.jogos++
+        timeB.jogos++
+
+        // mapas
+        timeA.mapasGanhos += partida.placar.timeA
+        timeA.mapasPerdidos += partida.placar.timeB
+
+        timeB.mapasGanhos += partida.placar.timeB
+        timeB.mapasPerdidos += partida.placar.timeA
+
+        // saldo mapas
+        timeA.saldoMapas += partida.placar.timeA - partida.placar.timeB
+        timeB.saldoMapas += partida.placar.timeB - partida.placar.timeA
+
+        // rounds
+        partida.mapas && partida.mapas.forEach(mapa => {
+            if (!mapa.resultado) return
+
+            timeA.roundsGanhos += mapa.resultado.timeA.total
+            timeA.roundsPerdidos += mapa.resultado.timeB.total
+
+            timeB.roundsGanhos += mapa.resultado.timeB.total
+            timeB.roundsPerdidos += mapa.resultado.timeA.total
+
+            timeA.saldoRounds += mapa.resultado.timeA.total - mapa.resultado.timeB.total
+            timeB.saldoRounds += mapa.resultado.timeB.total - mapa.resultado.timeA.total
+        })
+
+        // vitória / derrota
+        if (partida.placar.timeA > partida.placar.timeB) {
+            timeA.vitorias++
+            timeA.pontos += 1
+
+            timeB.derrotas++
+        }
+        else {
+            timeB.vitorias++
+            timeB.pontos += 1
+
+            timeA.derrotas++
+        }
+
+    })
+
+    return Object.values(tabela).sort((a, b) => {
+
+        // critério 1: pontos
+        if (b.pontos !== a.pontos)
+            return b.pontos - a.pontos
+
+        // critério 2: saldo mapas
+        if (b.saldoMapas !== a.saldoMapas)
+            return b.saldoMapas - a.saldoMapas
+
+        // critério 3: saldo rounds
+        return b.saldoRounds - a.saldoRounds
+
+    })
+
+}
+
+export function getMapasMaisJogadas(partidas: Partida[]) {
+    const contador: Record<string, number> = {}
+
+    TODOS_MAPAS.forEach(mapa => {
+        contador[mapa] = 0
+    })
+
+    partidas.forEach(partida => {
+        partida.mapas?.forEach(mapa => {
+            if (!mapa.resultado) return
+
+            const nome = mapa.nome.toLowerCase()
+
+            // garante que só conta mapas válidos
+            if (!(nome in contador)) return
+
+            contador[nome]++
+        })
+    })
+
+    return Object.entries(contador)
+        .map(([mapa, quantidade]) => ({
+            mapa,
+            quantidade
+        }))
+        .sort((a, b) => b.quantidade - a.quantidade)
+}
+
+
+
 
 export function getAllCampeonatos() {
     return campeonatos
@@ -137,146 +290,6 @@ export function calcularRating(j: EstatisticasJogadorNoCampeonato) {
 }
 
 
-export function getMapasMaisJogadas(partidas: Partida[]) {
-    const contador: Record<string, number> = {}
-
-    partidas.forEach(partida => {
-        if (partida.mapas) {
-            partida.mapas.forEach(mapa => {
-                if (!mapa.resultado) return
-
-                if (!contador[mapa.nome.toLowerCase()]) {
-                    contador[mapa.nome.toLowerCase()] = 0
-                }
-
-                contador[mapa.nome.toLowerCase()]++
-            })
-        }
-    })
-
-    return Object.entries(contador)
-        .map(([mapa, quantidade]) => ({
-            mapa,
-            quantidade
-        }))
-        .sort((a, b) => b.quantidade - a.quantidade)
-}
-
-export interface LinhaTabela {
-    timeId: string
-    pontos: number
-
-    jogos: number
-    vitorias: number
-    derrotas: number
-
-    mapasGanhos: number
-    mapasPerdidos: number
-
-    roundsGanhos: number
-    roundsPerdidos: number
-
-    saldoMapas: number
-    saldoRounds: number
-}
-
-export function getTabelaByCampeonatoId(campeonato: Campeonato): LinhaTabela[] {
-
-    const partidas = getPartidasByCampeonato(campeonato.id)
-    const timesIds = campeonato.timesIds
-
-    const tabela: Record<string, LinhaTabela> = {}
-
-    // inicializa tabela
-    timesIds?.forEach(timeId => {
-        tabela[timeId] = {
-            timeId,
-            pontos: 0,
-            jogos: 0,
-            vitorias: 0,
-            derrotas: 0,
-
-            mapasGanhos: 0,
-            mapasPerdidos: 0,
-
-            roundsGanhos: 0,
-            roundsPerdidos: 0,
-
-            saldoMapas: 0,
-            saldoRounds: 0
-        }
-    })
-
-    partidas.forEach(partida => {
-
-        if (partida.situacao !== "finalizado") return
-
-        const timeA = tabela[partida.timeAId]
-        const timeB = tabela[partida.timeBId]
-
-        if (!timeA || !timeB) return
-
-        // jogos
-        timeA.jogos++
-        timeB.jogos++
-
-        // mapas
-        timeA.mapasGanhos += partida.placar.timeA
-        timeA.mapasPerdidos += partida.placar.timeB
-
-        timeB.mapasGanhos += partida.placar.timeB
-        timeB.mapasPerdidos += partida.placar.timeA
-
-        // saldo mapas
-        timeA.saldoMapas += partida.placar.timeA - partida.placar.timeB
-        timeB.saldoMapas += partida.placar.timeB - partida.placar.timeA
-
-        // rounds
-        partida.mapas && partida.mapas.forEach(mapa => {
-            if (!mapa.resultado) return
-
-            timeA.roundsGanhos += mapa.resultado.timeA.total
-            timeA.roundsPerdidos += mapa.resultado.timeB.total
-
-            timeB.roundsGanhos += mapa.resultado.timeB.total
-            timeB.roundsPerdidos += mapa.resultado.timeA.total
-
-            timeA.saldoRounds += mapa.resultado.timeA.total - mapa.resultado.timeB.total
-            timeB.saldoRounds += mapa.resultado.timeB.total - mapa.resultado.timeA.total
-        })
-
-        // vitória / derrota
-        if (partida.placar.timeA > partida.placar.timeB) {
-            timeA.vitorias++
-            timeA.pontos += 1
-
-            timeB.derrotas++
-        }
-        else {
-            timeB.vitorias++
-            timeB.pontos += 1
-
-            timeA.derrotas++
-        }
-
-    })
-
-    return Object.values(tabela).sort((a, b) => {
-
-        // critério 1: pontos
-        if (b.pontos !== a.pontos)
-            return b.pontos - a.pontos
-
-        // critério 2: saldo mapas
-        if (b.saldoMapas !== a.saldoMapas)
-            return b.saldoMapas - a.saldoMapas
-
-        // critério 3: saldo rounds
-        return b.saldoRounds - a.saldoRounds
-
-    })
-
-}
 
 export function getEstatisticasJogadoresCampeonato(partidas: Partida[]) {
     const acumulador: Record<string, EstatisticaJogadorAcumulado> = {}

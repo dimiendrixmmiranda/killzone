@@ -3,6 +3,10 @@
     {
       "path": "/api/craque/close-expired",
       "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/rankingComunidadade/update",
+      "schedule": "0 0 * * *"
     }
   ]
 }

@@ -1,4 +1,5 @@
 import MenuInferior from "../menuInferior/MenuInferior";
+import Footer from "./footer/Footer";
 import Header from "./header/Header";
 
 interface TemplateProps {
@@ -12,6 +13,7 @@ export default function Template({ children }: TemplateProps) {
             <main className="font-main bg-zinc-200 min-h-screen">
                 {children}
             </main>
+            <Footer />
             <MenuInferior />
         </>
     )

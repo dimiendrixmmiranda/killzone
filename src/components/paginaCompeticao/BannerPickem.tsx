@@ -1,14 +1,30 @@
+'use client'
+import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 interface BannerPickemProps {
     idCampeonato: string
 }
 
 export default function BannerPickem({ idCampeonato }: BannerPickemProps) {
+
+    const { data: session, status } = useSession()
+    const [user, setUser] = useState<any>(undefined)
+    useEffect(() => {
+        if (session?.user?.email) {
+            fetch("/api/user")
+                .then(res => res.json())
+                .then(data => {
+                    setUser(data)
+                })
+        }
+    }, [session])
+
     return (
         <div className="flex w-full text-white rounded-lg overflow-hidden">
             <Link
-                href={`/pickem/${idCampeonato}`}
+                href={`${user ? `/pickem/${idCampeonato}`: '/menu/login'}`}
                 className="
                     bg-zinc-900 w-full p-4 block
                     bg-[url('/default/pickem.png')]
