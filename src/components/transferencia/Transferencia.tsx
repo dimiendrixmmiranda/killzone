@@ -6,14 +6,10 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-import { getTransferenciasByTeam } from "@/src/services/transferencia.service"
-import { getPlayerById } from "@/src/services/player.service"
-import { getTeamById, getTeamSafe } from "@/src/services/team.service"
-import { transferencias } from "@/src/data/transferencias/transferencia.data"
+import { getTeamSafe } from "@/src/services/team.service"
 import Image from "next/image";
-import { Time } from "@/src/domain/Time";
 import { MdKeyboardArrowRight } from "react-icons/md";
-import { FaArrowRight, FaChair, FaCheck, FaPen, FaQuestion, FaUserSlash } from "react-icons/fa6";
+import { FaCheck, FaPen, FaQuestion } from "react-icons/fa6";
 import { IMAGEM_JOGADOR_DEFAULT, IMAGEM_TIME_DEFAULT } from "@/src/assets/imagens";
 import Link from "next/link";
 import { AiOutlineDislike, AiOutlineLike } from "react-icons/ai";
