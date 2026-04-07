@@ -1,5 +1,6 @@
 'use client'
 import { IMAGEM_TIME_DEFAULT } from "@/src/assets/imagens";
+import { Campeonato } from "@/src/domain/Campeonato";
 import { Time } from "@/src/domain/Time";
 import { getCampeonatoById, getClassificacaoDobleEliminationPlayoff, getClassificacaoDoubleElimination, getClassificacaoFinalSuica, getClassificacaoPlayoffs } from "@/src/services/campeonato.service";
 import { getTeamById } from "@/src/services/team.service";
@@ -18,34 +19,49 @@ interface Resultado {
 }
 
 export default function ClassificacaoFinal({ idCampeonato }: ClassificacaoFinalProps) {
-    const campeonato = getCampeonatoById(idCampeonato)
-
+    const [campeonatos, setCampeonatos] = useState<any[]>([])
+    const [campeonatoAtual, setCampeonatoAtual] = useState<Campeonato | null>(null)
     const [classificacao, setClassificacao] = useState<Resultado[]>([])
 
     useEffect(() => {
-        switch (campeonato?.formato) {
+        async function fetchCampeonatos() {
+            const res = await fetch("/api/campeonatos")
+            const data = await res.json()
+            setCampeonatos(data)
+        }
+
+        fetchCampeonatos()
+    }, [])
+
+    useEffect(() => {
+        const campeonato = campeonatos.filter(camp => camp.slugId === idCampeonato)
+        if(campeonato) setCampeonatoAtual(campeonato[0])
+    }, [idCampeonato, campeonatos])
+
+    useEffect(() => {
+        switch (campeonatoAtual?.formato) {
             case 'suico':
                 return (
-                    setClassificacao(getClassificacaoFinalSuica(campeonato))
+                    setClassificacao(getClassificacaoFinalSuica(campeonatoAtual!))
                 )
             case 'playoff':
                 return (
                     setClassificacao(getClassificacaoPlayoffs(idCampeonato))
                 )
-            case 'gsl-format':
-                return (
-                    setClassificacao(getClassificacaoDoubleElimination(campeonato))
-                )
-            case 'gsl-format-playoff':
-                return (
-                    setClassificacao(getClassificacaoDobleEliminationPlayoff(idCampeonato))
-                )
+            // case 'gsl-format':
+            //     return (
+            //         setClassificacao(getClassificacaoDoubleElimination(campeonato))
+            //     )
+            // case 'gsl-format-playoff':
+            //     return (
+            //         setClassificacao(getClassificacaoDobleEliminationPlayoff(idCampeonato))
+            //     )
 
             default:
                 break;
         }
-    }, [campeonato, idCampeonato])
-    
+    }, [campeonatos, idCampeonato])
+
     return (
         <div className="bg-zinc-900 p-6 text-white flex flex-col gap-4 justify-center items-center mt-4">
             <h3 className="font-heading text-3xl self-start">Classificação Final</h3>
@@ -63,7 +79,7 @@ export default function ClassificacaoFinal({ idCampeonato }: ClassificacaoFinalP
                                 case '2º':
                                     posicaoGrid = 'col-start-3 col-end-5'
                                     break;
-                                case '1º/2º':{
+                                case '1º/2º': {
                                     const primeiros = classificacao.filter(t => t.resultadoSuica === '1º/2º')
 
                                     const indexDentroDoGrupo = primeiros.findIndex(t => t.timeId === timeClassificacao.timeId)
@@ -78,9 +94,9 @@ export default function ClassificacaoFinal({ idCampeonato }: ClassificacaoFinalP
                                 case '3º/4º':
                                     {
                                         const primeiros = classificacao.filter(t => t.resultadoSuica === '3º/4º')
-    
+
                                         const indexDentroDoGrupo = primeiros.findIndex(t => t.timeId === timeClassificacao.timeId)
-    
+
                                         if (indexDentroDoGrupo === 0) {
                                             posicaoGrid = 'lg:col-start-1 lg:col-end-3'
                                         } else if (indexDentroDoGrupo === 1) {
@@ -92,11 +108,11 @@ export default function ClassificacaoFinal({ idCampeonato }: ClassificacaoFinalP
                                 default:
                                     break;
                             }
-
+                            console.log(timeClassificacao)
                             return (
-                                <div key={i} className={`${posicaoGrid}`} style={{textShadow: '1px 1px 2px black'}}>
+                                <div key={i} className={`${posicaoGrid}`} style={{ textShadow: '1px 1px 2px black' }}>
                                     {
-                                        timeClassificacao.resultadoSuica === '-' || timeClassificacao.resultadoSuica === '' ? (
+                                        timeClassificacao.resultadoSuica === '-' || timeClassificacao.resultadoSuica === '' || timeClassificacao.encerrouParticipacao === false ? (
                                             <div className={`bg-zinc-800 text-white p-2 flex flex-col justify-center items-center justify-self-center rounded-xl opacity-70 w-full h-full`}>
                                                 <span>{i + 1}º</span>
                                                 <div className="relative w-22 h-22">
@@ -122,10 +138,9 @@ export default function ClassificacaoFinal({ idCampeonato }: ClassificacaoFinalP
                                                     rounded-xl
                                                     relative
                                                     w-full h-full
-                                                    ${campeonato?.formato === 'gsl-format' && i < 6 ? 'bg-green-600' : ''}
-                                                    ${campeonato?.formato === 'gsl-format' && i >= 6 ? 'bg-red-600' : ''}
-                                                    ${campeonato?.formato === 'suico' && i < 8 ? 'bg-green-600' : ''}
-                                                    ${campeonato?.formato === 'suico' && i >= 8 ? 'bg-red-600' : ''}
+                                                    bg-zinc-700
+                                                    ${campeonatoAtual?.formato === 'suico' && i < 8 && timeClassificacao.encerrouParticipacao ? 'bg-green-600!' : ''}
+                                                    ${campeonatoAtual?.formato === 'suico' && i >= 8 && timeClassificacao.encerrouParticipacao ? 'bg-red-600!' : ''}
                                                 `}
                                             >
                                                 <div className="flex flex-col justify-center items-center gap-1 xl:flex-row xl:w-full">

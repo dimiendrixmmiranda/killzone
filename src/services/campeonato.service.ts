@@ -401,13 +401,14 @@ enum RankingGrupo {
 }
 
 export function getClassificacaoFinalSuica(campeonato: Campeonato) {
-
     const partidas =
-        getPartidasByCampeonato(campeonato.id)
+        getPartidasByCampeonato(campeonato.slugId!)
             ?.filter(p => p.situacao === "finalizado") ?? []
 
     const tabela = getTabelaByCampeonatoId(campeonato) ?? []
-    const timesIds = getTimesByCampeonatoId(campeonato.id) ?? []
+    const timesIds = campeonato.timesIds ?? []
+
+    console.log(timesIds)
 
     if (!timesIds.length) return []
 

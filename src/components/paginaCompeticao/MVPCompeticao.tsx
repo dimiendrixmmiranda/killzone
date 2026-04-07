@@ -40,9 +40,6 @@ export default function MVPCompeticao({ campeonato }: MVPCompeticaoProps) {
         ) ?? null
     }, [dadosJogadorMvp, jogadores])
 
-    console.log(jogadores)
-    // console.log(jogadores)
-
     if (!campeonato) return null
 
     const situacao = getSituacaoCampeonato(
@@ -65,8 +62,6 @@ export default function MVPCompeticao({ campeonato }: MVPCompeticaoProps) {
 
         fetchJogadores()
     }, [])
-
-    console.log(dadosJogadorMvp)
 
     useEffect(() => {
         const ranking = getTabelaByCampeonatoId(campeonato)

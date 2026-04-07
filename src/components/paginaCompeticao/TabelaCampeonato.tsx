@@ -21,8 +21,6 @@ export default function TabelaDoCampeonato({ campeonato }: TabelaDoCampeonatoPro
     const partidaTerceiroLugar = getPartidasByCampeonato(campeonato.id).filter(partida => partida.fase === 'terceiro-lugar')
     const partidaFinal = getPartidasByCampeonato(campeonato.id).filter(partida => partida.fase === 'final')
 
-    console.log(tabela)
-
     function formatarData(data?: Date) {
         if (!data) return ""
 
