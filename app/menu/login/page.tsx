@@ -59,10 +59,10 @@ export default function Page() {
 
     return (
         <Template>
-            <div>
+            <div className="max-w-[1000px] mx-auto">
                 {
                     estado === "criar-conta" ? (
-                        <div className="text-black p-4 pb-20">
+                        <div className="text-black p-4 pb-20 rounded-xl overflow-hidden">
                             <div className="bg-azul-escuro text-white flex flex-col gap-2 justify-center items-center p-4">
                                 <h3 className="font-heading text-4xl text-center">Crie uma conta e aproveite todas as vantagens do site</h3>
                                 <p className="text-center text-sm">Comente nas notícias, vote no craque da semana, crie seu ranking das organizações, monte seu Pick’em em campeonatos específicos e explore muitas outras interações dentro da plataforma.</p>
@@ -131,7 +131,7 @@ export default function Page() {
                             </div>
                         </div>
                     ) : (
-                        <div className="text-black p-4 pb-20">
+                        <div className="text-black p-4 pb-20 rounded-xl overflow-hidden">
                             <div className="bg-azul-escuro text-white flex flex-col gap-2 justify-center items-center p-4">
                                 <h3 className="font-heading text-4xl text-center">Bem vindo de volta! Faça login e aproveite!</h3>
                                 <p className="text-center text-sm">Comente nas notícias, vote no craque da semana, crie seu ranking das organizações, monte seu Pick’em em campeonatos específicos e explore muitas outras interações dentro da plataforma.</p>

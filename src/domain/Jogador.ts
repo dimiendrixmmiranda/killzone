@@ -8,7 +8,7 @@ export interface Jogador {
     imagem: string
     jogoId: string
     timeAtual: string  // acho que tem que sair e pegar pelas transferencias
-    status: "ativo" | "banco" | "inativo" | "stand-in"
+    status: "ativo" | "banco" | "inativo" | "stand-in" | "default"
     sinergia: number
     highlights: string
     papel: string

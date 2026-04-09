@@ -22,12 +22,16 @@ export default function CardJogador({ jogador, times, noticiasJogador }: Props) 
     return (
         <>
             <li
-                className="relative mx-auto cursor-pointer grid grid-rows-[1fr_40px] max-w-50 w-full overflow-hidden h-62.5 bg-zinc-400 shrink-0 lg:max-w-55 lg:h-70"
+                className={`relative mx-auto cursor-pointer grid grid-rows-[1fr_40px] max-w-50 w-full overflow-hidden h-62.5 shrink-0 lg:max-w-55 lg:h-70
+                        ${jogador.status == 'ativo' ? 'bg-zinc-400' : ''}
+                        ${jogador.status == 'inativo' || jogador.status == 'banco' ? 'bg-red-600' : ''}
+                        ${jogador.status == 'default' ? 'bg-yellow-600 opacity-50' : ''}
+                    `}
                 onClick={() => setAberto(true)}
             >
                 <div className="relative">
-                    <p className="absolute top-2 left-2 font-heading text-xs font-semibold capitalize text-white bg-orange-600 leading-4 px-1 pt-1" style={{textShadow: '1px 1px 2px black'}}>{jogador.papel}</p>
-                    <p className="absolute top-1 right-2 font-heading text-lg font-semibold capitalize text-white bg-azul-escuro leading-4 p-1 pt-2" style={{textShadow: '1px 1px 2px black'}}>{jogador.sinergia}</p>
+                    <p className="absolute top-2 left-2 font-heading text-xs font-semibold capitalize text-white bg-orange-600 leading-4 px-1 pt-1" style={{ textShadow: '1px 1px 2px black' }}>{jogador.papel}</p>
+                    <p className="absolute top-1 right-2 font-heading text-lg font-semibold capitalize text-white bg-azul-escuro leading-4 p-1 pt-2" style={{ textShadow: '1px 1px 2px black' }}>{jogador.sinergia}</p>
                     <div className="absolute top-[50%] left-[50%] w-[90%] h-[90%]" style={{ transform: 'translate(-50%,-50%)' }}>
                         <div className="relative w-full h-full">
                             <Image alt="Logo do time" src={time?.imagem || IMAGEM_TIME_DEFAULT} fill className="object-contain" />

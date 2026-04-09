@@ -44,7 +44,7 @@ export default function TimeClient({
         imagem: IMAGEM_JOGADOR_DEFAULT,
         jogoId: "",
         timeAtual: "",
-        status: "inativo",
+        status: "default",
         sinergia: 0,
         highlights: "",
         papel: "rifler",
@@ -78,19 +78,31 @@ export default function TimeClient({
             jogador => jogador.timeAtual === time.id
         )
 
-        let listaFinal = jogadoresDoTime
+        const ativos = jogadoresDoTime.filter(j => j.status === "ativo")
+        const inativos = jogadoresDoTime.filter(j => j.status !== "ativo")
 
-        if (jogadoresDoTime.length < 6) {
-            const faltando = 6 - jogadoresDoTime.length
+        let listaFinal: Jogador[] = []
+
+        // 1. Garantir 6 ativos (ou completar com default)
+        if (ativos.length >= 6) {
+            listaFinal = ativos.slice(0, 6)
+        } else {
+            const faltando = 6 - ativos.length
             listaFinal = [
-                ...jogadoresDoTime,
+                ...ativos,
                 ...jogadoresDefault.slice(0, faltando)
             ]
         }
 
+        // 2. Adicionar inativos no final
+        listaFinal = [
+            ...listaFinal,
+            ...inativos
+        ]
+
         setListaDeJogadoresDoTime(listaFinal)
     }, [time, listaDeJogadores])
-
+    
     return (
         <Template>
             <div>

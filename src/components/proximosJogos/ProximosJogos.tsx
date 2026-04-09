@@ -39,7 +39,7 @@ export default function ProximosJogos() {
     }
 
     return (
-        <div className="p-4 flex flex-col gap-4 bg-zinc-950 h-full max-h-[950px]">
+        <div className="p-4 flex flex-col bg-zinc-950 h-full max-h-[980px]">
             <h2 className="font-heading text-4xl">
                 Próximos Jogos
             </h2>

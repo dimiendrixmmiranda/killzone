@@ -35,7 +35,7 @@ export default function ClassificacaoFinal({ idCampeonato }: ClassificacaoFinalP
 
     useEffect(() => {
         const campeonato = campeonatos.filter(camp => camp.slugId === idCampeonato)
-        if(campeonato) setCampeonatoAtual(campeonato[0])
+        if (campeonato) setCampeonatoAtual(campeonato[0])
     }, [idCampeonato, campeonatos])
 
     useEffect(() => {
@@ -104,11 +104,32 @@ export default function ClassificacaoFinal({ idCampeonato }: ClassificacaoFinalP
                                         }
                                         break;
                                     }
+                                case '3-0': {
+                                    const primeiros = classificacao.filter(t => t.resultadoSuica === '3-0')
+                                    const indexDentroDoGrupo = primeiros.findIndex(t => t.timeId === timeClassificacao.timeId)
 
+                                    if (indexDentroDoGrupo === 0) {
+                                        posicaoGrid = 'lg:col-start-1 lg:col-end-3'
+                                    } else if (indexDentroDoGrupo === 1) {
+                                        posicaoGrid = 'lg:col-start-3 lg:col-end-5'
+                                    }
+                                    break;
+                                }
+                                case '0-3': {
+                                    const primeiros = classificacao.filter(t => t.resultadoSuica === '0-3')
+                                    const indexDentroDoGrupo = primeiros.findIndex(t => t.timeId === timeClassificacao.timeId)
+
+                                    if (indexDentroDoGrupo === 0) {
+                                        posicaoGrid = 'lg:col-start-1 lg:col-end-3'
+                                    } else if (indexDentroDoGrupo === 1) {
+                                        posicaoGrid = 'lg:col-start-3 lg:col-end-5'
+                                    }
+                                    break;
+                                }
                                 default:
                                     break;
                             }
-                            console.log(timeClassificacao)
+                            // console.log(timeClassificacao)
                             return (
                                 <div key={i} className={`${posicaoGrid}`} style={{ textShadow: '1px 1px 2px black' }}>
                                     {
@@ -153,7 +174,6 @@ export default function ClassificacaoFinal({ idCampeonato }: ClassificacaoFinalP
                                                             className="object-contain"
                                                         />
                                                     </div>
-
                                                     {/* nome */}
                                                     <p className="font-bold capitalize text-center leading-tight md:my-auto xl:text-2xl">
                                                         {time?.nome.replaceAll('-', ' ')}

@@ -21,6 +21,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import { getAllPartidas } from "@/src/services/partidas.service"
 import { getPlayerById } from "@/src/services/player.service"
+import { Jogador } from "@prisma/client"
 
 
 export default function SeletorDeTimes() {
@@ -29,7 +30,8 @@ export default function SeletorDeTimes() {
     const [timeSelecionado, setTimeSelecionado] = useState<Time | null>(null)
     const [timeSelecionadoConfirmado, setTimeSelecionadoConfirmado] = useState(false)
     const [noticiasTimeAtual, setNoticiasTimeAtual] = useState<Noticia[]>([])
-
+    const [listaDeJogadores, setListaDeJogadores] = useState<Jogador[]>([])
+    const [jogadorEstrela, setJogadorEstrela] = useState<Jogador | null>(null)
     const [noticias, setNoticias] = useState<Noticia[]>([])
 
     const partidas = getAllPartidas()
@@ -49,6 +51,18 @@ export default function SeletorDeTimes() {
             new Date(a.data).getTime() - new Date(b.data).getTime()
         )
 
+    const partidasPassadas = partidas
+        .filter(partida =>
+            partida.timeAId === timeSelecionado?.id ||
+            partida.timeBId === timeSelecionado?.id
+        )
+        .filter(partida =>
+            partida.situacao === 'finalizado'
+        )
+        .sort((a, b) =>
+            new Date(b.data).getTime() - new Date(a.data).getTime() // mais recente primeiro
+        )
+
 
     useEffect(() => {
         const teams = getAllTeams()
@@ -66,7 +80,7 @@ export default function SeletorDeTimes() {
         }
     }, [])
 
-    const proximaPartida = partidasFiltradasPorTime[0] || null
+    const proximaPartida = partidasFiltradasPorTime[0] === null || partidasFiltradasPorTime[0] === undefined ? partidasPassadas[0] : partidasFiltradasPorTime[0]
 
     useEffect(() => {
         if (timeSelecionado) {
@@ -96,7 +110,26 @@ export default function SeletorDeTimes() {
         }
 
         fetchNews()
-    }, [])
+    }, [timeSelecionado])
+
+    useEffect(() => {
+        async function fetchListaDeJogadores() {
+            if (!timeSelecionado?.jogadorEstrela?.idJogador) return
+
+            const res = await fetch("/api/jogador")
+            const data = await res.json()
+
+            if (!Array.isArray(data)) return
+
+            const jogador = data.find(j =>
+                j.apelido.toLowerCase() === timeSelecionado.jogadorEstrela?.idJogador.toLowerCase()
+            )
+            setJogadorEstrela(jogador || null)
+        }
+
+        fetchListaDeJogadores()
+    }, [timeSelecionado])
+
 
     return (
         <nav className="bg-white text-azul-escuro mt-4">
@@ -294,16 +327,34 @@ export default function SeletorDeTimes() {
                                                     <span className="capitalize font-bold text-lg truncate max-w-[90%]">{proximaPartida.campeonatoId?.replaceAll('-', ' ')}</span>
                                                     <div className="flex flex-col">
                                                         <div className="flex items-center gap-1">
-                                                            <div className="relative w-10 h-10">
-                                                                <Image alt={`${getTeamById(proximaPartida.timeAId)?.nome}`} src={getTeamById(proximaPartida.timeAId)?.imagem || IMAGEM_TIME_DEFAULT} fill className="object-contain" />
+                                                            <div className="flex items-center gap-1 max-w-[150px] w-full">
+                                                                <div className="relative w-10 h-10">
+                                                                    <Image alt={`${getTeamById(proximaPartida.timeAId)?.nome}`} src={getTeamById(proximaPartida.timeAId)?.imagem || IMAGEM_TIME_DEFAULT} fill className="object-contain" />
+                                                                </div>
+                                                                <h2 className="capitalize font-heading text-4xl mt-2">{getTeamById(proximaPartida.timeAId)?.id}</h2>
                                                             </div>
-                                                            <h2 className="capitalize font-heading text-4xl mt-2">{getTeamById(proximaPartida.timeAId)?.id}</h2>
+                                                            {
+                                                                proximaPartida.situacao === 'finalizado' ? (
+                                                                    <div className="bg-zinc-300 w-8 h-8 flex justify-center items-center text-black">
+                                                                        <span className="font-heading text-4xl leading-7 mt-2">{proximaPartida.placar.timeA}</span>
+                                                                    </div>
+                                                                ) : ''
+                                                            }
                                                         </div>
                                                         <div className="flex items-center gap-1">
-                                                            <div className="relative w-10 h-10">
-                                                                <Image alt={`${getTeamById(proximaPartida.timeBId)?.nome}`} src={getTeamById(proximaPartida.timeBId)?.imagem || IMAGEM_TIME_DEFAULT} fill className="object-contain" />
+                                                            <div className="flex items-center gap-1 max-w-[150px] w-full">
+                                                                <div className="relative w-10 h-10">
+                                                                    <Image alt={`${getTeamById(proximaPartida.timeBId)?.nome}`} src={getTeamById(proximaPartida.timeBId)?.imagem || IMAGEM_TIME_DEFAULT} fill className="object-contain" />
+                                                                </div>
+                                                                <h2 className="capitalize font-heading text-4xl mt-2">{getTeamById(proximaPartida.timeBId)?.id}</h2>
                                                             </div>
-                                                            <h2 className="capitalize font-heading text-4xl mt-2">{getTeamById(proximaPartida.timeBId)?.id}</h2>
+                                                            {
+                                                                proximaPartida.situacao === 'finalizado' ? (
+                                                                    <div className="bg-zinc-300 w-8 h-8 flex justify-center items-center text-black">
+                                                                        <span className="font-heading text-4xl leading-7 mt-2">{proximaPartida.placar.timeB}</span>
+                                                                    </div>
+                                                                ) : ''
+                                                            }
                                                         </div>
                                                     </div>
                                                     <div className="max-w-[65%]">
@@ -330,11 +381,8 @@ export default function SeletorDeTimes() {
                                                 <div className="absolute top-10 right-2">
                                                     <div className="relative w-30 h-45 md:h-40">
                                                         <Image
-                                                            alt={`${timeSelecionado?.jogadorEstrela?.idJogador}`}
-                                                            src={
-                                                                getPlayerById(timeSelecionado?.jogadorEstrela?.idJogador ?? "")?.imagem
-                                                                || IMAGEM_JOGADOR_DEFAULT
-                                                            }
+                                                            alt={`${jogadorEstrela?.nome}`}
+                                                            src={jogadorEstrela?.imagem || IMAGEM_JOGADOR_DEFAULT}
                                                             fill
                                                             className="object-cover"
                                                         />

@@ -13,7 +13,7 @@ import Videos from "@/src/components/videos/Videos";
 export default async function Home() {
 	return (
 		<Template>
-			<div className="max-w-360 mx-auto p-2 pb-16 md:pb-2 lg:p-4">
+			<div className="max-w-360 mx-auto p-2 pb-6 md:pb-2 lg:p-4">
 				<CarrosselMobile />
 				<CarrosselWeb />
 				<SeletorDeTimes />
