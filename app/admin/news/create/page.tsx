@@ -1,5 +1,6 @@
 'use client'
 
+import CampeonatoRelacionado from "@/src/components/paginaCompeticao/CampeonatoRelacionado"
 import { useState } from "react"
 
 export default function CriarNoticia() {
@@ -9,6 +10,7 @@ export default function CriarNoticia() {
     const [dataPublicacao, setDataPublicacao] = useState<Date | null>(null)
     const [autor, setAutor] = useState("")
     const [partidaId, setPartidaId] = useState("")
+    const [campeonatosRelacionados, setCampeonatosRelacionados] = useState("")
     const [jogoId, setJogoId] = useState("")
     const [urlDaImagem, setUrlDaImagem] = useState("")
 
@@ -42,12 +44,14 @@ export default function CriarNoticia() {
                 autor,
                 partidaId,
                 jogoId,
+                campeonatoId: campeonatosRelacionados || null,
                 timesRelacionados: listaDeTimesRelacionados,
                 conteudo: conteudo.split("\n").filter(l => l.trim() !== ""),
                 sobreOJogo,
                 tags: ["cs2"]
             })
         })
+        console.log(res)
     }
 
     return (
@@ -78,7 +82,7 @@ export default function CriarNoticia() {
                 type="date"
                 name="dataPublicacao"
                 id="dataPublicacao"
-                onChange={(e) => setDataPublicacao(new Date(e.target.value))}
+                onChange={(e) => setDataPublicacao(e.target.value as any)}
                 className="bg-zinc-950 text-white p-2 w-full h-[40px]"
 
             />
@@ -158,6 +162,19 @@ export default function CriarNoticia() {
                         </li>
                     ))}
                 </ul>
+            </div>
+            <div>
+                <input
+                    type="text"
+                    name="campeonatoId"
+                    id="campeonatoId"
+                    placeholder="id do campeonato"
+                    value={campeonatosRelacionados}
+                    onChange={(e) => {
+                        setCampeonatosRelacionados(e.target.value)
+                    }}
+                    className="bg-zinc-950 text-white p-2 w-full h-[40px]"
+                />
             </div>
 
             <div className="flex flex-col">

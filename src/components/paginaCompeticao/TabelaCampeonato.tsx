@@ -14,12 +14,11 @@ interface TabelaDoCampeonatoProps {
 
 export default function TabelaDoCampeonato({ campeonato }: TabelaDoCampeonatoProps) {
     const tabela = getTabelaByCampeonatoId(campeonato)
-    
-    const partidas = getPartidasByCampeonato(campeonato.id)
-    const partidasQuartas = getPartidasByCampeonato(campeonato.id).filter(partida => partida.fase === 'quartas')
-    const partidasSemifinal = getPartidasByCampeonato(campeonato.id).filter(partida => partida.fase === 'semifinal')
-    const partidaTerceiroLugar = getPartidasByCampeonato(campeonato.id).filter(partida => partida.fase === 'terceiro-lugar')
-    const partidaFinal = getPartidasByCampeonato(campeonato.id).filter(partida => partida.fase === 'final')
+    const partidas = getPartidasByCampeonato(campeonato.slugId!)
+    const partidasQuartas = getPartidasByCampeonato(campeonato.slugId!).filter(partida => partida.fase === 'quartas')
+    const partidasSemifinal = getPartidasByCampeonato(campeonato.slugId!).filter(partida => partida.fase === 'semifinal')
+    const partidaTerceiroLugar = getPartidasByCampeonato(campeonato.slugId!).filter(partida => partida.fase === 'terceiro-lugar')
+    const partidaFinal = getPartidasByCampeonato(campeonato.slugId!).filter(partida => partida.fase === 'final')
 
     function formatarData(data?: Date) {
         if (!data) return ""
@@ -789,7 +788,7 @@ export default function TabelaDoCampeonato({ campeonato }: TabelaDoCampeonatoPro
     }
 
     return (
-        <div className="flex flex-col gap-3 w-full">
+        <div className={`flex flex-col gap-3 w-full ${campeonato.formato === 'gsl-format' || campeonato.formato === 'playoff' ? 'col-start-1 col-end-3': '2xl:col-start-1 2xl:col-end-2'}`}>
             <h3 className="font-heading text-3xl">Tabela Do Campeonato</h3>
             {
                 campeonato?.formato && identificarTipoCampeonato(campeonato?.formato, campeonato)

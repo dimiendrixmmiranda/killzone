@@ -11,11 +11,6 @@ interface CardCompeticaoProps {
 }
 
 export default function CardCompeticao({ campeonato }: CardCompeticaoProps) {
-    const situacao = getSituacaoCampeonato(
-        campeonato.inicio,
-        campeonato.fim
-    )
-
     function renderizarSituacao(situacao: string) {
 
         if (situacao === 'ocorrendo') {

@@ -543,13 +543,13 @@ export function getClassificacaoFinalSuica(campeonato: Campeonato) {
 
 type FasePlayoff = "quartas" | "semifinal" | "terceiro" | "final"
 
-export function getClassificacaoPlayoffs(campeonatoId: string) {
+export function getClassificacaoPlayoffs(campeonato: Campeonato) {
 
     const partidas =
-        getPartidasByCampeonato(campeonatoId)
+        getPartidasByCampeonato(campeonato.slugId!)
             ?.filter(p => p.situacao === "finalizado") ?? []
 
-    const timesIds = getTimesByCampeonatoId(campeonatoId) ?? []
+    const timesIds = campeonato.timesIds ?? []
 
     if (!timesIds.length) return []
 
@@ -651,7 +651,10 @@ export function getClassificacaoPlayoffs(campeonatoId: string) {
             time.terceiro ||
             time.quarto ||
             !!time.eliminacao,
-        resultadoSuica: ""
+        resultadoSuica:
+            time.eliminacao === "quartas"
+                ? "5º/8º"
+                : `${index + 1}º`
     }))
 }
 
@@ -664,12 +667,12 @@ const LOWER_FASES_ELIMINATORIAS = [
 export function getClassificacaoDoubleElimination(campeonato: Campeonato) {
 
     const partidas =
-        getPartidasByCampeonato(campeonato.id)
+        getPartidasByCampeonato(campeonato.slugId!)
             ?.filter(p => p.situacao === "finalizado") ?? []
 
     const tabela = getTabelaByCampeonatoId(campeonato) ?? []
 
-    const timesIds = getTimesByCampeonatoId(campeonato.id) ?? []
+    const timesIds = campeonato.timesIds ?? []
 
     if (!timesIds.length) return []
 

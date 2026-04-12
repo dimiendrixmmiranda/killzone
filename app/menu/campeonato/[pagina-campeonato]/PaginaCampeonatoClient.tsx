@@ -92,9 +92,9 @@ export default function PaginaCampeonatoClient({ idCampeonato }: Props) {
                 <DadosDoCampeonato campeonato={campeonatoAtual} />
                 <JogosDoCampeonato partidas={partidasDoCampeonato} />
                 <CampeonatoRelacionado campeonatoAtual={campeonatoAtual} />
-                <div className="xl:grid xl:grid-cols-[1fr_auto] xl:gap-12">
+                <div className="lg:grid lg:grid-cols-2 lg:gap-10 2xl:grid-cols-3">
                     <TabelaDoCampeonato campeonato={campeonatoAtual} />
-                    <NoticiasDoCampeonato />
+                    <NoticiasDoCampeonato campeonato={campeonatoAtual}/>
                 </div>
                 {
                     campeonatoAtual.pickem? (

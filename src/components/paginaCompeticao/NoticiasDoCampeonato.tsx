@@ -3,11 +3,18 @@ import CardNoticia from "../cardNoticia/CardNoticia"
 import { Paginator } from "primereact/paginator"
 import { useEffect, useRef, useState } from "react"
 import { Noticia } from "@/src/domain/Noticia"
+import { Campeonato } from "@/src/domain/Campeonato"
+import { useBreakpoints } from "@/src/utils/useTamanhoDeTela"
 
-export default function NoticiasDoCampeonato() {
+interface NoticiasDoCampeonatoProps {
+    campeonato: Campeonato
+}
+
+export default function NoticiasDoCampeonato({ campeonato }: NoticiasDoCampeonatoProps) {
     const [first, setFirst] = useState(0)
-    const rows = 4 // vao ser 4 mais por enquanto vou deixar 2
+    const [rows, setRows] = useState(2)
     const [noticias, setNoticias] = useState<Noticia[]>([])
+    const { isSm, isMd, isLg, isXl, is2xl } = useBreakpoints()
 
     const topRef = useRef<HTMLDivElement | null>(null)
 
@@ -20,19 +27,41 @@ export default function NoticiasDoCampeonato() {
         })
     }
 
+    useEffect(() =>{
+        if(isXl){
+            setRows(3)
+        }
+    },[isSm, isMd, isLg, isXl, is2xl])
+
     useEffect(() => {
         setFirst(0)
     }, [noticias])
 
     useEffect(() => {
-        const noticias = getAllNews()
-        setNoticias(noticias)
-    }, [])
+        async function fetchNews() {
+            const res = await fetch("/api/news")
+            const data = await res.json()
+
+            if (!Array.isArray(data)) {
+                setNoticias([])
+                return
+            }
+
+            if (campeonato) {
+                const noticiasFiltradas = data.filter(noticia => noticia.campeonatoId === campeonato.slugId)
+                setNoticias(noticiasFiltradas)
+            } else {
+                setNoticias(data.filter(n => n && n.id))
+            }
+        }
+
+        fetchNews()
+    }, [campeonato])
 
     return (
-        <div className="flex flex-col text-white mt-6 w-full overflow-hidden">
+        <div className={`flex flex-col text-white mt-6 w-full overflow-hidden lg:mt-0  ${campeonato.formato === 'gsl-format' || campeonato.formato === 'playoff' ? 'col-start-3 col-end-4': '2xl:col-start-2 2xl:col-end-4'}`}>
             <h3 className="font-heading text-3xl text-black">Notícias Do Campeonato</h3>
-            <ul className="flex flex-col gap-4 md:grid md:grid-cols-2 xl:flex">
+            <ul className="flex flex-col gap-4 ">
                 {
                     noticias.length > 0 ? (
                         noticias
@@ -42,14 +71,14 @@ export default function NoticiasDoCampeonato() {
                                     i={i}
                                     key={noticia.id}
                                     noticia={noticia}
-                                    fonteTitulo="xl:text-lg"
-                                    fonteSubitulo="xl:text-sm xl:flex-1"
-                                    tamanhoCard="xl:h-[175px]"
+                                    fonteTitulo="xl:text-xl 2xl:text-2xl"
+                                    fonteSubitulo="xl:text-sm xl:flex-1 2xl:text-base 2xl:line-clamp-2 2xl:flex-none"
+                                    tamanhoCard="xl:h-[200px] max-w-[800px] mx-auto 2xl:max-w-[1000px]"
                                 />
                             ))
                     ) : (
-                        <li>
-                            <p>Nenhuma notícia encontrada!</p>
+                        <li className="text-black">
+                            <p className="font-heading text-2xl text-center mt-4">Nenhuma notícia encontrada!</p>
                         </li>
                     )
                 }

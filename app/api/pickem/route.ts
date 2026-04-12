@@ -48,18 +48,33 @@ export async function GET(req: NextRequest) {
     const userId = searchParams.get("userId")
     const campeonatoId = searchParams.get("campeonatoId")
 
-    if (!userId || !campeonatoId) {
-        return NextResponse.json({ error: "Dados inválidos" }, { status: 400 })
+    if (!userId) {
+        return NextResponse.json({ error: "userId obrigatório" }, { status: 400 })
     }
 
-    const pickem = await prisma.pickem.findUnique({
-        where: {
-            userId_campeonatoId: {
-                userId,
-                campeonatoId
+    // 🔥 CASO 1: buscar específico (como já faz hoje)
+    if (campeonatoId) {
+        const pickem = await prisma.pickem.findUnique({
+            where: {
+                userId_campeonatoId: {
+                    userId,
+                    campeonatoId
+                }
             }
+        })
+
+        return NextResponse.json(pickem)
+    }
+
+    // 🔥 CASO 2: buscar TODOS os pickems do usuário
+    const pickems = await prisma.pickem.findMany({
+        where: {
+            userId
+        },
+        orderBy: {
+            createdAt: "desc" // opcional, se tiver esse campo
         }
     })
 
-    return NextResponse.json(pickem)
+    return NextResponse.json(pickems)
 }

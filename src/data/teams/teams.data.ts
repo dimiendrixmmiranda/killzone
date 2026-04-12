@@ -768,5 +768,37 @@ export const teams: Time[] = [
 
         modalidades: ['CS2', 'VALORANT']
     },
+    {
+        id: 'hotu',
+        nome: 'HOTU',
+        regiao: 'EU',
+        jogoId: 'cs2',
+        imagem: 'https://liquipedia.net/commons/images/6/65/HOTU_logo_lightmode.png',
+        cor: ['#E53935'],
+
+        fundadoEm: '2022',
+
+        jogadorEstrela: {
+            idJogador: 'kade0'
+        },
+
+        modalidades: ['CS2']
+    },
+    {
+        id: 'gentle-mates',
+        nome: 'Gentle Mates',
+        regiao: 'EU',
+        jogoId: 'cs2',
+        imagem: 'https://liquipedia.net/commons/images/4/42/Gentle_Mates_2024_darkmode.png',
+        cor: ['#2D2D2D'],
+
+        fundadoEm: '2023',
+
+        jogadorEstrela: {
+            idJogador: 'bodyy'
+        },
+
+        modalidades: ['CS2']
+    },
 ];
 

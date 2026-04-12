@@ -15,8 +15,6 @@ export default function ProximosJogos() {
 
     const jogos = getProximasPartidas(limit)
 
-    console.log(jogos)
-
     if (jogos.length <= 0) {
         return (
             <div className="bg-zinc-950 p-4 mt-4 flex flex-col gap-4">

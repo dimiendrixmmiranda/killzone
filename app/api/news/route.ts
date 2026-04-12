@@ -20,6 +20,16 @@ export async function POST(req: Request) {
             return Response.json({ error: "usuário não encontrado" }, { status: 404 })
         }
 
+        let dataFormatada = undefined
+
+        if (body.dataPublicacao) {
+            const d = new Date(body.dataPublicacao)
+
+            if (!isNaN(d.getTime())) {
+                dataFormatada = d
+            }
+        }
+
         const news = await prisma.news.create({
             data: {
                 slug: body.slug,
@@ -31,6 +41,8 @@ export async function POST(req: Request) {
                 sobreOJogo: body.sobreOJogo || [],
                 timesRelacionados: body.timesRelacionados || [],
                 partidaId: body.partidaId || '',
+                campeonatoId: body.campeonatoId || '',
+                dataPublicacao: dataFormatada,
                 jogoId: body.jogoId || '',
                 tags: {
                     connectOrCreate: body.tags.map((tag: string) => ({

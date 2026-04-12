@@ -7,6 +7,7 @@ interface EquipesParticipantesProps {
 }
 
 export default function EquipesParticipantes({ times }: EquipesParticipantesProps) {
+    console.log(times)
     return (
         <div className="flex flex-col gap-2 w-full mb-auto">
             <h3 className="font-heading text-3xl md:col-start-1 md:col-end-3">Equipes Participantes</h3>

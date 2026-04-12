@@ -15,6 +15,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import { IMAGEM_USER_DEFAULT } from '@/src/assets/imagens';
 import Image from 'next/image';
+import Link from 'next/link';
 
 
 
@@ -33,6 +34,32 @@ export default function Page() {
     const [confirmacaoNovaSenha, setconfirmacaoNovaSenha] = useState('')
 
     const [comentarios, setComentarios] = useState<any[]>([])
+
+    const [pickems, setPickems] = useState<any[]>([])
+    const [campeonatos, setCampeonatos] = useState<any[]>([])
+
+    useEffect(() => {
+        async function fetchPickems() {
+            if (!user?.id) return
+
+            const res = await fetch(`/api/pickem?userId=${user.id}`)
+            const data = await res.json()
+
+            setPickems(data)
+        }
+
+        fetchPickems()
+    }, [user])
+
+    useEffect(() => {
+        async function fetchCampeonatos() {
+            const res = await fetch("/api/campeonatos")
+            const data = await res.json()
+            setCampeonatos(data)
+        }
+
+        fetchCampeonatos()
+    }, [])
 
     useEffect(() => {
         if (!user?.id) return
@@ -323,6 +350,57 @@ export default function Page() {
                                         />
                                     </SwiperSlide>
                                 ))}
+                            </Swiper>
+                        ) : (
+                            <div className="flex justify-center items-center text-center">
+                                <h3>Você ainda não fez nenhum comentário!</h3>
+                            </div>
+                        )
+                    }
+                </div>
+                <div className="flex flex-col gap-4 w-full col-start-1 col-end-3">
+                    <h3 className="font-heading text-3xl">Comentarios que voce ja fez:</h3>
+                    {
+                        pickems.length > 0 ? (
+                            <Swiper
+                                modules={[Autoplay, Pagination, Navigation]}
+                                slidesPerView={1}
+                                loop
+                                autoplay={{
+                                    delay: 5000,
+                                    disableOnInteraction: false,
+                                }}
+                                breakpoints={{
+                                    0: {
+                                        slidesPerView: 1,
+                                        spaceBetween: 10,
+                                    },
+                                    1024: {
+                                        slidesPerView: 2,
+                                        spaceBetween: 15,
+                                    },
+                                    1440: {
+                                        slidesPerView: 3,
+                                        spaceBetween: 15,
+                                    },
+                                }}
+                                pagination={{ clickable: true }}
+                                navigation
+                                className="w-full h-full"
+                            >
+                                {pickems.map((pickem) => {
+                                    const campAtual = campeonatos.find(camp => camp.id === pickem.campeonatoId)
+                                    return (
+                                        <SwiperSlide key={pickem.id}>
+                                            <Link href={`/pickem/${campAtual.slugId}`}>
+                                                <div className='relative w-full h-[200px] rounded-t-xl overflow-hidden'>
+                                                    <Image alt={`${campAtual.nome}`} src={campAtual.imagem} fill className='object-cover' />
+                                                </div>
+                                                <h2 className='text-center font-heading text-4xl truncate bg-zinc-950 w-full flex justify-center items-center text-white pt-1 rounded-b-xl'>{campAtual.nome}</h2>
+                                            </Link>
+                                        </SwiperSlide>
+                                    )
+                                })}
                             </Swiper>
                         ) : (
                             <div className="flex justify-center items-center text-center">

@@ -123,55 +123,59 @@ export default function CraqueDaSemana() {
     //     return <div>Carregando...</div>
     // }
 
-    if (jogadores.length <= 0) {
-        return (
-            <div className="bg-zinc-950 p-4 mt-4 flex flex-col gap-4">
-                <h2 className="w-full h-6 bg-zinc-600"></h2>
-                <div className="flex flex-col gap-2">
-                    <p className="w-full h-4 bg-zinc-600"></p>
-                    <p className="w-full h-4 bg-zinc-600"></p>
-                </div>
-                <Swiper
-                    modules={[Pagination, Navigation, Autoplay]}
-                    slidesPerView={1}
-                    loop
-                    autoplay={{
-                        delay: 5000,
-                        disableOnInteraction: false,
-                    }}
-                    spaceBetween={15}
-                    breakpoints={{
-                        425: {
-                            slidesPerView: 2
-                        },
-                        768: {
-                            slidesPerView: 3
-                        },
-                        1024: {
-                            slidesPerView: 4
-                        },
-                        1440: {
-                            slidesPerView: 6
-                        }
-                    }}
-                    pagination={{ clickable: true }}
-                    navigation
-                    className="h-75 w-full"
-                >
-                    {Array.from({length: 6}).map((_, i) => {
-                        return (
-                            <SwiperSlide
-                                key={i}
-                                className="bg-zinc-600 rounded-xl relative w-full h-full max-w-62.5 mx-2"
-                            >
-                                <div className="bg-zinc-600 text-black grid grid-rows-[1fr_30px] h-full w-full rounded-xl relative"></div>
-                            </SwiperSlide>
-                        )
-                    })}
-                </Swiper>
-            </div>
-        )
-    }
+    console.log(jogadores)
+    console.log(alreadyVoted)
+    console.log(resultado)
+
+    // if (jogadores.length <= 0) {
+    //     return (
+    //         <div className="bg-zinc-950 p-4 mt-4 flex flex-col gap-4">
+    //             <h2 className="w-full h-6 bg-zinc-600"></h2>
+    //             <div className="flex flex-col gap-2">
+    //                 <p className="w-full h-4 bg-zinc-600"></p>
+    //                 <p className="w-full h-4 bg-zinc-600"></p>
+    //             </div>
+    //             <Swiper
+    //                 modules={[Pagination, Navigation, Autoplay]}
+    //                 slidesPerView={1}
+    //                 loop
+    //                 autoplay={{
+    //                     delay: 5000,
+    //                     disableOnInteraction: false,
+    //                 }}
+    //                 spaceBetween={15}
+    //                 breakpoints={{
+    //                     425: {
+    //                         slidesPerView: 2
+    //                     },
+    //                     768: {
+    //                         slidesPerView: 3
+    //                     },
+    //                     1024: {
+    //                         slidesPerView: 4
+    //                     },
+    //                     1440: {
+    //                         slidesPerView: 6
+    //                     }
+    //                 }}
+    //                 pagination={{ clickable: true }}
+    //                 navigation
+    //                 className="h-75 w-full"
+    //             >
+    //                 {Array.from({length: 6}).map((_, i) => {
+    //                     return (
+    //                         <SwiperSlide
+    //                             key={i}
+    //                             className="bg-zinc-600 rounded-xl relative w-full h-full max-w-62.5 mx-2"
+    //                         >
+    //                             <div className="bg-zinc-600 text-black grid grid-rows-[1fr_30px] h-full w-full rounded-xl relative"></div>
+    //                         </SwiperSlide>
+    //                     )
+    //                 })}
+    //             </Swiper>
+    //         </div>
+    //     )
+    // }
     
     return (
         <>

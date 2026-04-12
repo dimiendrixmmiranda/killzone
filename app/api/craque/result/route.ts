@@ -3,7 +3,8 @@ import { NextResponse } from "next/server"
 
 export async function GET() {
     try {
-        const session = await prisma.playerVoteSession.findFirst({
+        // 1️⃣ tenta OPEN
+        let session = await prisma.playerVoteSession.findFirst({
             where: { status: "OPEN" },
             include: {
                 players: {
@@ -14,11 +15,29 @@ export async function GET() {
             }
         })
 
+        // 2️⃣ se não tiver OPEN → pega última CLOSED
+        if (!session) {
+            session = await prisma.playerVoteSession.findFirst({
+                where: { status: "CLOSED" },
+                orderBy: {
+                    endDate: "desc"
+                },
+                include: {
+                    players: {
+                        include: {
+                            player: true
+                        }
+                    }
+                }
+            })
+        }
+
+        // 3️⃣ se não tiver nada mesmo
         if (!session) {
             return NextResponse.json([])
         }
 
-        // 🔥 votos agrupados
+        // 4️⃣ pega votos dessa sessão
         const votes = await prisma.playerVote.groupBy({
             by: ["playerId"],
             where: {
@@ -29,18 +48,17 @@ export async function GET() {
             }
         })
 
-        // 🔥 transforma em mapa (facilita lookup)
         const voteMap = new Map(
             votes.map((v: any) => [v.playerId, v._count.playerId])
         )
 
-        // 🔥 junta com TODOS jogadores
+        // 5️⃣ monta resultado
         const resultado = session.players.map((p: any) => ({
             playerId: p.player.id,
             votos: voteMap.get(p.player.id) || 0
         }))
 
-        // 🔥 ordena
+        // 6️⃣ ordena
         resultado.sort((a: any, b: any) => b.votos - a.votos)
 
         return NextResponse.json(resultado)

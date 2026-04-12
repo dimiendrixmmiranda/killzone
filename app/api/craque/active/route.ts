@@ -5,7 +5,8 @@ import { NextResponse } from "next/server"
 
 export async function GET() {
     try {
-        const session = await prisma.playerVoteSession.findFirst({
+        // 1. tenta pegar OPEN
+        let session = await prisma.playerVoteSession.findFirst({
             where: { status: "OPEN" },
             include: {
                 players: {
@@ -15,6 +16,23 @@ export async function GET() {
                 }
             }
         })
+
+        // 2. se NÃO tiver OPEN → pega o último CLOSED
+        if (!session) {
+            session = await prisma.playerVoteSession.findFirst({
+                where: { status: "CLOSED" },
+                orderBy: {
+                    endDate: "desc" // 🔥 pega o mais recente
+                },
+                include: {
+                    players: {
+                        include: {
+                            player: true
+                        }
+                    }
+                }
+            })
+        }
 
         return NextResponse.json(session)
 

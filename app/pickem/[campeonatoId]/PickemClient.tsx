@@ -12,7 +12,7 @@ import {
 import { getTeamById } from "@/src/services/team.service"
 import Image from "next/image"
 import { IMAGEM_TIME_DEFAULT } from "@/src/assets/imagens"
-import { getCampeonatoById } from "@/src/services/campeonato.service"
+import { getClassificacaoFinalSuica, getClassificacaoPlayoffs, getSituacaoCampeonato, SituacaoCampeonato } from "@/src/services/campeonato.service"
 import { Campeonato } from "@/src/domain/Campeonato"
 import { useParams } from "next/navigation"
 import { useSession } from "next-auth/react"
@@ -36,49 +36,118 @@ interface RedondoState {
     slots: Slot[]
 }
 
-// Time Arrastavel
-function TimeDraggable({ timeId, onRemove }: { timeId: TimeID, onRemove?: (id: TimeID) => void }) {
+interface Resultado {
+    partidas: number
+    encerrouParticipacao: boolean
+    resultadoSuica: string
+    timeId: string
+    posicao: number
+}
 
+type ResultadoPickem = {
+    pontos: number
+    acertou3x0: boolean
+    acertou0x3: boolean
+    acertosAvancar: number
+
+    // 🔥 o que você pediu
+    timesAcertados3x0: string[]
+    timesAcertados0x3: string[]
+    timesAcertadosAvancar: string[]
+}
+
+function getCorCard(timeId: string, tipo: SlotTipo, resultado: ResultadoPickem) {
+    if (tipo === '3-0') {
+        return resultado.timesAcertados3x0.includes(timeId)
+            ? 'bg-green-600'
+            : 'bg-red-600'
+    }
+
+    if (tipo === '0-3') {
+        return resultado.timesAcertados0x3.includes(timeId)
+            ? 'bg-green-600'
+            : 'bg-red-600'
+    }
+
+    if (tipo === 'advance') {
+        return resultado.timesAcertadosAvancar.includes(timeId)
+            ? 'bg-green-600'
+            : 'bg-red-600'
+    }
+
+    return 'bg-zinc-800'
+}
+// Time Arrastavel
+function TimeDraggable({
+    timeId,
+    tipo,
+    resultado,
+    situacao,
+    onRemove
+}: {
+    timeId: TimeID
+    tipo?: SlotTipo
+    resultado?: ResultadoPickem
+    situacao?: SituacaoCampeonato
+    onRemove?: (id: TimeID) => void
+}) {
     const { attributes, listeners, setNodeRef, transform } = useDraggable({
         id: timeId
     })
-
     const style = transform
         ? { transform: `translate(${transform.x}px, ${transform.y}px)` }
         : undefined
 
     const dadosTime = getTeamById(timeId)
 
+    // 🔥 AQUI entra o EXTRA
+    const mostrarResultado = !!resultado
+
+    const cor =
+        mostrarResultado && tipo && resultado
+            ? getCorCard(timeId, tipo, resultado)
+            : 'bg-zinc-800'
     return (
         <div
             ref={setNodeRef}
             style={style}
-            className="
+            className={`
                 w-[120px] h-[120px]
                 rounded-lg
                 grid grid-rows-[1fr_15px] gap-1
                 text-black font-bold
                 touch-none z-20 relative
-                bg-zinc-800 p-2
+                ${cor}
+                p-4
                 cursor-pointer
-                sm:w-[140px] sm:h-[140px]
-                md:w-[80px] md:h-[80px]
-                lg:w-[110px] lg:h-[110px]
-                xl:w-[140px] xl:h-[140px]
-                2xl:w-[150px] 2xl:h-[150px]
-            "
+                md:w-[80px]
+                md:h-[80px]
+                lg:w-[120px]
+                lg:h-[120px]
+                xl:w-[140px]
+                xl:h-[140px]
+                2xl:w-[160px]
+                2xl:h-[160px]
+            `}
         >
             <div
                 className="relative w-full h-full"
                 {...listeners}
                 {...attributes}
             >
-                <Image alt={`${dadosTime?.nome || timeId}`} src={dadosTime?.imagem || IMAGEM_TIME_DEFAULT} fill className="object-contain" />
+                <Image
+                    alt={`${dadosTime?.nome || timeId}`}
+                    src={dadosTime?.imagem || IMAGEM_TIME_DEFAULT}
+                    fill
+                    className="object-contain"
+                />
             </div>
-            <h3 className="text-xs font-heading truncate self-center justify-self-center max-w-full text-white xl:text-lg" style={{ textShadow: '1px 1px 2px black' }}>
+
+            <h3 className="text-xs font-heading truncate self-center justify-self-center max-w-full text-white xl:text-lg">
                 {dadosTime?.nome}
             </h3>
-            {onRemove && (
+
+            {onRemove && situacao !== 'encerrado' && (
                 <button
                     onClick={(e) => {
                         e.stopPropagation()
@@ -89,10 +158,7 @@ function TimeDraggable({ timeId, onRemove }: { timeId: TimeID, onRemove?: (id: T
                         w-5 h-5
                         bg-red-500 text-white
                         rounded-full
-                        text-xs font-bold
-                        flex items-center justify-center
-                        cursor-pointer
-                        z-50
+                        text-xs flex items-center justify-center
                     "
                 >
                     x
@@ -145,7 +211,7 @@ export default function PickemClient({ idCampeonato }: PickemClientProps) {
     const [campeonatos, setCampeonatos] = useState<any[]>([])
     const [campeonatoAtual, setCampeonatoAtual] = useState<Campeonato | null>(null)
     const [pickemDefinido, setPickemDefinido] = useState<boolean>(false)
-
+    const [pick, setPick] = useState<any | null>(null)
     const { data: session } = useSession()
     const [user, setUser] = useState<any>(undefined)
 
@@ -195,7 +261,7 @@ export default function PickemClient({ idCampeonato }: PickemClientProps) {
             )
 
             const data = await res.json()
-
+            setPick(data)
             setPickemDefinido(false)
 
             if (data?.picks) {
@@ -266,7 +332,88 @@ export default function PickemClient({ idCampeonato }: PickemClientProps) {
         })
     }
 
-    console.log(pickemDefinido)
+    const situacao = campeonatoAtual && getSituacaoCampeonato(
+        campeonatoAtual?.inicio,
+        campeonatoAtual?.fim
+    )
+    const [classificacao, setClassificacao] = useState<Resultado[]>([])
+
+    useEffect(() => {
+        switch (campeonatoAtual?.formato) {
+            case 'suico':
+                return (
+                    setClassificacao(getClassificacaoFinalSuica(campeonatoAtual!))
+                )
+            case 'playoff':
+                return (
+                    setClassificacao(getClassificacaoPlayoffs(campeonatoAtual!))
+                )
+            default:
+                break;
+        }
+    }, [campeonatos, campeonatoAtual])
+
+    function calcularResultadoPickem(
+        classificacao: Resultado[],
+        slots: Slot[]
+    ): ResultadoPickem {
+
+        // 🔹 resultados reais
+        const ids3x0 = classificacao
+            .filter(t => t.resultadoSuica === '3-0')
+            .map(t => t.timeId)
+
+        const ids0x3 = classificacao
+            .filter(t => t.resultadoSuica === '0-3')
+            .map(t => t.timeId)
+
+        const idsAvancaram = classificacao
+            .filter(t => t.resultadoSuica === '3-1' || t.resultadoSuica === '3-2')
+            .map(t => t.timeId)
+
+        // 🔹 picks usuário
+        const pick3x0 = slots.find(s => s.tipo === '3-0')?.timeId
+        const pick0x3 = slots.find(s => s.tipo === '0-3')?.timeId
+
+        const picksAvancar = slots
+            .filter(s => s.tipo === 'advance')
+            .map(s => s.timeId)
+            .filter(Boolean) as string[]
+
+        let pontos = 0
+
+        // 🎯 3-0
+        const acertou3x0 = !!pick3x0 && ids3x0.includes(pick3x0)
+        const timesAcertados3x0 = acertou3x0 ? [pick3x0!] : []
+
+        if (acertou3x0) pontos++
+
+        // 🎯 0-3
+        const acertou0x3 = !!pick0x3 && ids0x3.includes(pick0x3)
+        const timesAcertados0x3 = acertou0x3 ? [pick0x3!] : []
+
+        if (acertou0x3) pontos++
+
+        // 🎯 ADVANCE
+        const timesAcertadosAvancar = picksAvancar.filter(id =>
+            idsAvancaram.includes(id)
+        )
+
+        const acertosAvancar = timesAcertadosAvancar.length
+        pontos += acertosAvancar
+
+        return {
+            pontos,
+            acertou3x0,
+            acertou0x3,
+            acertosAvancar,
+            timesAcertados3x0,
+            timesAcertados0x3,
+            timesAcertadosAvancar
+        }
+    }
+
+    const resultado = calcularResultadoPickem(classificacao, slots)
 
     return (
         <Template>
@@ -289,6 +436,7 @@ export default function PickemClient({ idCampeonato }: PickemClientProps) {
                                         key={timeId}
                                         timeId={timeId}
                                         onRemove={removerTime}
+                                        situacao={situacao!}
                                     />
                                 ))}
                             </div>
@@ -301,17 +449,27 @@ export default function PickemClient({ idCampeonato }: PickemClientProps) {
                                         {getSlotTime("3-0") && (
                                             <TimeDraggable
                                                 timeId={getSlotTime("3-0")!}
+                                                tipo="3-0"
+                                                resultado={resultado}
                                                 onRemove={removerTime}
+                                                situacao={situacao!}
                                             />
                                         )}
                                     </SlotDrop>
                                 </div>
-                                <div className="flex justify-center items-center col-start-1 col-end-3 md:col-start-2 md:col-end-3">
+                                <div className="flex flex-col justify-center items-center col-start-1 col-end-3 md:col-start-2 md:col-end-3">
                                     {
                                         pickemDefinido ? (
                                             <h2 className="font-heading text-center text-4xl hidden md:block md:text-5xl lg:text-6xl ">Você ja definiu seus times no Pick'em!</h2>
                                         ) : (
                                             <h2 className="font-heading text-center text-4xl hidden md:block md:text-5xl lg:text-6xl ">Você ainda não definiu seus times no Pick'em!</h2>
+                                        )
+                                    }
+                                    {
+                                        situacao === 'encerrado' ? (
+                                            <h2>Campeonato Encerrado</h2>
+                                        ) : (
+                                            <h2>Campeonato em Andamento...</h2>
                                         )
                                     }
                                 </div>
@@ -321,7 +479,10 @@ export default function PickemClient({ idCampeonato }: PickemClientProps) {
                                         {getSlotTime("0-3") && (
                                             <TimeDraggable
                                                 timeId={getSlotTime("0-3")!}
+                                                tipo="0-3"
+                                                resultado={resultado}
                                                 onRemove={removerTime}
+                                                situacao={situacao!}
                                             />
                                         )}
                                     </SlotDrop>
@@ -338,7 +499,10 @@ export default function PickemClient({ idCampeonato }: PickemClientProps) {
                                             {slot.timeId && (
                                                 <TimeDraggable
                                                     timeId={slot.timeId}
+                                                    tipo="advance"
+                                                    resultado={resultado}
                                                     onRemove={removerTime}
+                                                    situacao={situacao!}
                                                 />
                                             )}
                                         </SlotDrop>

@@ -85,7 +85,6 @@ export default function SeletorDeTimes() {
     useEffect(() => {
         if (timeSelecionado) {
             const not = noticias.filter(noticia => noticia.timesRelacionados?.includes(timeSelecionado.id))
-            console.log(not)
             setNoticiasTimeAtual(not.slice(0, 4))
         }
     }, [timeSelecionado, noticias])

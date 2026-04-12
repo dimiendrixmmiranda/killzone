@@ -46,12 +46,12 @@ export default function ClassificacaoFinal({ idCampeonato }: ClassificacaoFinalP
                 )
             case 'playoff':
                 return (
-                    setClassificacao(getClassificacaoPlayoffs(idCampeonato))
+                    setClassificacao(getClassificacaoPlayoffs(campeonatoAtual!))
                 )
-            // case 'gsl-format':
-            //     return (
-            //         setClassificacao(getClassificacaoDoubleElimination(campeonato))
-            //     )
+            case 'gsl-format':
+                return (
+                    setClassificacao(getClassificacaoDoubleElimination(campeonatoAtual))
+                )
             // case 'gsl-format-playoff':
             //     return (
             //         setClassificacao(getClassificacaoDobleEliminationPlayoff(idCampeonato))
@@ -62,11 +62,13 @@ export default function ClassificacaoFinal({ idCampeonato }: ClassificacaoFinalP
         }
     }, [campeonatos, idCampeonato])
 
+    console.log(classificacao)
+
     return (
         <div className="bg-zinc-900 p-6 text-white flex flex-col gap-4 justify-center items-center mt-4">
             <h3 className="font-heading text-3xl self-start">Classificação Final</h3>
             <div className="flex flex-col gap-5 w-full">
-                <div className="flex flex-col gap-2 md:grid md:grid-cols-2 lg:grid-cols-4">
+                <div className="flex flex-col gap-2 md:grid md:grid-cols-12">
                     {
                         classificacao.map((timeClassificacao, i) => {
                             const time: Time | undefined = getTeamById(timeClassificacao.timeId)
@@ -74,11 +76,106 @@ export default function ClassificacaoFinal({ idCampeonato }: ClassificacaoFinalP
 
                             switch (timeClassificacao.resultadoSuica) {
                                 case '1º':
-                                    posicaoGrid = 'col-start-1 col-end-3'
+                                    posicaoGrid = 'col-start-1 col-end-13'
                                     break;
                                 case '2º':
-                                    posicaoGrid = 'col-start-3 col-end-5'
+                                    posicaoGrid = 'col-start-1 col-end-5'
                                     break;
+                                case '3º':
+                                    posicaoGrid = 'col-start-5 col-end-9'
+                                    break;
+                                case '4º':
+                                    posicaoGrid = 'col-start-9 col-end-13'
+                                    break;
+                                case '5º/8º': {
+                                    const primeiros = classificacao.filter(t => t.resultadoSuica === '5º/8º')
+                                    const indexDentroDoGrupo = primeiros.findIndex(t => t.timeId === timeClassificacao.timeId)
+
+                                    if (indexDentroDoGrupo === 0) {
+                                        posicaoGrid = 'md:col-start-1 md:col-end-4'
+                                    } else if (indexDentroDoGrupo === 1) {
+                                        posicaoGrid = 'md:col-start-4 md:col-end-7'
+                                    } else if (indexDentroDoGrupo === 2) {
+                                        posicaoGrid = 'md:col-start-7 md:col-end-10'
+                                    } else if (indexDentroDoGrupo === 3) {
+                                        posicaoGrid = 'md:col-start-10 md:col-end-13'
+                                    }
+                                    break;
+                                }
+                                case '3-0': {
+                                    const primeiros = classificacao.filter(t => t.resultadoSuica === '3-0')
+                                    const indexDentroDoGrupo = primeiros.findIndex(t => t.timeId === timeClassificacao.timeId)
+
+                                    if (indexDentroDoGrupo === 0) {
+                                        posicaoGrid = 'md:col-start-1 md:col-end-7'
+                                    } else if (indexDentroDoGrupo === 1) {
+                                        posicaoGrid = 'md:col-start-7 md:col-end-13'
+                                    }
+                                    break;
+                                }
+                                case '3-1': {
+                                    const primeiros = classificacao.filter(t => t.resultadoSuica === '3-1')
+                                    const indexDentroDoGrupo = primeiros.findIndex(t => t.timeId === timeClassificacao.timeId)
+
+                                    if (indexDentroDoGrupo === 0) {
+                                        posicaoGrid = 'md:col-start-1 md:col-end-5'
+                                    } else if (indexDentroDoGrupo === 1) {
+                                        posicaoGrid = 'md:col-start-5 md:col-end-9'
+                                    } else if (indexDentroDoGrupo === 2) {
+                                        posicaoGrid = 'md:col-start-9 md:col-end-13'
+                                    }
+                                    break;
+                                }
+                                case '3-2': {
+                                    const primeiros = classificacao.filter(t => t.resultadoSuica === '3-2')
+                                    const indexDentroDoGrupo = primeiros.findIndex(t => t.timeId === timeClassificacao.timeId)
+
+                                   if (indexDentroDoGrupo === 0) {
+                                        posicaoGrid = 'md:col-start-1 md:col-end-5'
+                                    } else if (indexDentroDoGrupo === 1) {
+                                        posicaoGrid = 'md:col-start-5 md:col-end-9'
+                                    } else if (indexDentroDoGrupo === 2) {
+                                        posicaoGrid = 'md:col-start-9 md:col-end-13'
+                                    }
+                                    break;
+                                }
+                                case '2-3': {
+                                    const primeiros = classificacao.filter(t => t.resultadoSuica === '2-3')
+                                    const indexDentroDoGrupo = primeiros.findIndex(t => t.timeId === timeClassificacao.timeId)
+
+                                    if (indexDentroDoGrupo === 0) {
+                                        posicaoGrid = 'md:col-start-1 md:col-end-5'
+                                    } else if (indexDentroDoGrupo === 1) {
+                                        posicaoGrid = 'md:col-start-5 md:col-end-9'
+                                    } else if (indexDentroDoGrupo === 2) {
+                                        posicaoGrid = 'md:col-start-9 md:col-end-13'
+                                    }
+                                    break;
+                                }
+                                case '1-3': {
+                                    const primeiros = classificacao.filter(t => t.resultadoSuica === '1-3')
+                                    const indexDentroDoGrupo = primeiros.findIndex(t => t.timeId === timeClassificacao.timeId)
+
+                                   if (indexDentroDoGrupo === 0) {
+                                        posicaoGrid = 'md:col-start-1 md:col-end-5'
+                                    } else if (indexDentroDoGrupo === 1) {
+                                        posicaoGrid = 'md:col-start-5 md:col-end-9'
+                                    } else if (indexDentroDoGrupo === 2) {
+                                        posicaoGrid = 'md:col-start-9 md:col-end-13'
+                                    }
+                                    break;
+                                }
+                                case '0-3': {
+                                    const primeiros = classificacao.filter(t => t.resultadoSuica === '0-3')
+                                    const indexDentroDoGrupo = primeiros.findIndex(t => t.timeId === timeClassificacao.timeId)
+
+                                    if (indexDentroDoGrupo === 0) {
+                                        posicaoGrid = 'md:col-start-1 md:col-end-7'
+                                    } else if (indexDentroDoGrupo === 1) {
+                                        posicaoGrid = 'md:col-start-7 md:col-end-13'
+                                    }
+                                    break;
+                                }
                                 case '1º/2º': {
                                     const primeiros = classificacao.filter(t => t.resultadoSuica === '1º/2º')
 
@@ -104,28 +201,6 @@ export default function ClassificacaoFinal({ idCampeonato }: ClassificacaoFinalP
                                         }
                                         break;
                                     }
-                                case '3-0': {
-                                    const primeiros = classificacao.filter(t => t.resultadoSuica === '3-0')
-                                    const indexDentroDoGrupo = primeiros.findIndex(t => t.timeId === timeClassificacao.timeId)
-
-                                    if (indexDentroDoGrupo === 0) {
-                                        posicaoGrid = 'lg:col-start-1 lg:col-end-3'
-                                    } else if (indexDentroDoGrupo === 1) {
-                                        posicaoGrid = 'lg:col-start-3 lg:col-end-5'
-                                    }
-                                    break;
-                                }
-                                case '0-3': {
-                                    const primeiros = classificacao.filter(t => t.resultadoSuica === '0-3')
-                                    const indexDentroDoGrupo = primeiros.findIndex(t => t.timeId === timeClassificacao.timeId)
-
-                                    if (indexDentroDoGrupo === 0) {
-                                        posicaoGrid = 'lg:col-start-1 lg:col-end-3'
-                                    } else if (indexDentroDoGrupo === 1) {
-                                        posicaoGrid = 'lg:col-start-3 lg:col-end-5'
-                                    }
-                                    break;
-                                }
                                 default:
                                     break;
                             }
