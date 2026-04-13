@@ -13,7 +13,7 @@ import { PiRankingFill } from "react-icons/pi";
 import SidebarLateral from "../../sidebar/SidebarLateral";
 import Redes from "../../redes/Redes";
 import { RiUserCommunityFill } from "react-icons/ri";
-import { FaUserCircle } from "react-icons/fa";
+import { FaFantasyFlightGames, FaUserCircle } from "react-icons/fa";
 import { useSession } from "next-auth/react";
 import { IMAGEM_JOGADOR_DEFAULT, IMAGEM_USER_DEFAULT } from "@/src/assets/imagens";
 
@@ -116,6 +116,12 @@ export default function Header() {
                         <Link href={'/'} className="flex items-center gap-1 font-heading text-xl truncate px-1 rounded-md duration-300 transition-all xl:text-xl hover:bg-magenta">
                             <RiUserCommunityFill />
                             <p className="mt-1" style={{ textShadow: '1px 1px 2px black' }}>Comunidade</p>
+                        </Link>
+                    </li>
+                    <li>
+                        <Link href={'/menu/fantasy'} className="flex items-center gap-1 font-heading text-xl truncate px-1 rounded-md duration-300 transition-all xl:text-xl hover:bg-magenta">
+                            <FaFantasyFlightGames />
+                            <p className="mt-1" style={{ textShadow: '1px 1px 2px black' }}>Fantasy</p>
                         </Link>
                     </li>
                 </ul>

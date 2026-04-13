@@ -136,14 +136,8 @@ export default function Campeonato({ containerCampeonato, containerMeses }: Camp
                 {
                     campeonatosOrdenados.length > 0 ? (
                         campeonatosOrdenados.map((campeonato, i) => {
-                            const situacao = getSituacaoCampeonato(
-                                campeonato.inicio,
-                                campeonato.fim
-                            )
-
-                            console.log(situacao)
                             return (
-                                <CardCompeticao campeonato={campeonato} key={i} />
+                                <CardCompeticao campeonato={campeonato} key={i} link={`/menu/campeonato/${campeonato.slugId}`}/>
                             )
                         })
                     ) : (

@@ -8,9 +8,10 @@ import { HiGlobeAlt } from "react-icons/hi"
 
 interface CardCompeticaoProps {
     campeonato: Campeonato
+    link: string
 }
 
-export default function CardCompeticao({ campeonato }: CardCompeticaoProps) {
+export default function CardCompeticao({ campeonato, link }: CardCompeticaoProps) {
     function renderizarSituacao(situacao: string) {
 
         if (situacao === 'ocorrendo') {
@@ -26,7 +27,7 @@ export default function CardCompeticao({ campeonato }: CardCompeticaoProps) {
 
     return (
         <li key={campeonato.id} className="overflow-hidden rounded-lg">
-            <Link href={`/menu/campeonato/${campeonato.slugId}`} className="flex flex-col relative">
+            <Link href={link} className="flex flex-col relative">
                 <div className="w-full h-50 relative">
                     <Image alt={campeonato.nome} src={campeonato.imagem} fill className="object-cover" />
                 </div>

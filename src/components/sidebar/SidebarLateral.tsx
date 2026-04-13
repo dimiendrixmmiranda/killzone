@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import BarraDePesquisa from "../barraDePesquisa/BarraDePesquisa";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { FaTrophy, FaUserCircle } from "react-icons/fa";
+import { FaFantasyFlightGames, FaTrophy, FaUserCircle } from "react-icons/fa";
 import { MdOutlineScoreboard } from "react-icons/md";
 import { FaGear } from "react-icons/fa6";
 import { PiRankingFill } from "react-icons/pi";
@@ -109,6 +109,12 @@ export default function SidebarLateral() {
                         <Link href={''} className="flex items-center gap-1 font-heading text-xl truncate xl:text-xl">
                             <RiUserCommunityFill />
                             <p className="mt-1">Comunidade</p>
+                        </Link>
+                    </li>
+                    <li>
+                        <Link href={'/menu/fantasy'} className="flex items-center gap-1 font-heading text-xl truncate px-1 rounded-md duration-300 transition-all xl:text-xl hover:bg-magenta">
+                            <FaFantasyFlightGames />
+                            <p className="mt-1" style={{ textShadow: '1px 1px 2px black' }}>Fantasy</p>
                         </Link>
                     </li>
                 </ul>

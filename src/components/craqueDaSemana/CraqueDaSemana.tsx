@@ -220,7 +220,7 @@ export default function CraqueDaSemana() {
                                         key={item.playerId}
                                         className="bg-white text-black rounded-xl relative w-full h-full max-w-62.5"
                                     >
-                                        <div className="bg-zinc-200 text-black grid grid-rows-[1fr_30px] h-full w-full rounded-xl relative">
+                                        <div className="bg-zinc-300 text-black grid grid-rows-[1fr_30px] h-full w-full rounded-xl relative">
                                             <span className="absolute top-2 left-2 font-bold font-heading text-4xl">{index + 1}º</span>
                                             <span className="absolute top-3 right-2 font-bold font-heading text-xl">{item.votos} vts</span>
                                             <div className="relative w-full h-full p-1">
