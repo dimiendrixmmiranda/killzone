@@ -800,5 +800,165 @@ export const teams: Time[] = [
 
         modalidades: ['CS2']
     },
+    {
+        id: 'bestia',
+        nome: 'BESTIA',
+        regiao: 'SA',
+        jogoId: 'cs2',
+        imagem: 'https://storage.ensigame.com/logos/teams/26d34a8b8aa5fb5e3e6ab30520b144ad.png',
+        cor: ['#000000'],
+
+        fundadoEm: '2023',
+
+        jogadorEstrela: {
+            idJogador: 'tomaszin'
+        },
+
+        modalidades: ['CS2']
+    },
+    {
+        id: 'shinden',
+        nome: 'ShindeN',
+        regiao: 'SA',
+        jogoId: 'cs2',
+        imagem: 'https://liquipedia.net/commons/images/3/31/ShindeN_darkmode.png',
+        cor: ['#1E88E5'],
+
+        fundadoEm: '2023',
+
+        jogadorEstrela: {
+            idJogador: 'pancc'
+        },
+
+        modalidades: ['CS2']
+    },
+    {
+        id: 'fluxo',
+        nome: 'Fluxo',
+        regiao: 'SA',
+        jogoId: 'cs2',
+        imagem: 'https://liquipedia.net/commons/images/c/cc/Fluxo_darkmode.png',
+        cor: ['#000000'],
+
+        fundadoEm: '2021',
+
+        jogadorEstrela: {
+            idJogador: 'felps'
+        },
+
+        modalidades: ['CS2']
+    },
+    {
+        id: 'galorys',
+        nome: 'Galorys',
+        regiao: 'SA',
+        jogoId: 'cs2',
+        imagem: 'https://liquipedia.net/commons/images/thumb/3/35/Galorys_2023_allmode.png/600px-Galorys_2023_allmode.png',
+        cor: ['#8E24AA'],
+
+        fundadoEm: '2023',
+
+        jogadorEstrela: {
+            idJogador: 'delboNi'
+        },
+
+        modalidades: ['CS2']
+    },
+    {
+        id: 'gamehunters',
+        nome: 'Game Hunters',
+        regiao: 'SA',
+        jogoId: 'cs2',
+        imagem: 'https://cdn.escharts.com/uploads/public/673/b08/d25/673b08d252786097686028.png',
+        cor: ['#43A047'],
+
+        fundadoEm: '2023',
+
+        jogadorEstrela: {
+            idJogador: 'doc'
+        },
+
+        modalidades: ['CS2']
+    },
+    {
+        id: 'bounty hunters',
+        nome: 'Bounty Hunters',
+        regiao: 'SA',
+        jogoId: 'cs2',
+        imagem: 'https://liquipedia.net/commons/images/8/8c/Bounty_Hunters_Esports_full_darkmode.png',
+        cor: ['#FFB300'],
+
+        fundadoEm: '2022',
+
+        jogadorEstrela: {
+            idJogador: 'latto'
+        },
+
+        modalidades: ['CS2']
+    },
+    {
+        id: 'isurus',
+        nome: 'Isurus',
+        regiao: 'SA',
+        jogoId: 'cs2',
+        imagem: 'https://liquipedia.net/commons/images/0/09/Isurus_2025_allmode.png',
+        cor: ['#00ACC1'],
+
+        fundadoEm: '2011',
+
+        jogadorEstrela: {
+            idJogador: '1962'
+        },
+
+        modalidades: ['CS2']
+    },
+    {
+        id: 'keydstars',
+        nome: 'Keyd Stars',
+        regiao: 'SA',
+        jogoId: 'cs2',
+        imagem: 'https://liquipedia.net/commons/images/a/a8/Keyd_Stars_2022_full_darkmode.png',
+        cor: ['#1A237E'],
+
+        fundadoEm: '2012',
+
+        jogadorEstrela: {
+            idJogador: 'deco'
+        },
+
+        modalidades: ['CS2']
+    },
+    {
+        id: 'yawara',
+        nome: 'Yawara',
+        regiao: 'SA',
+        jogoId: 'cs2',
+        imagem: 'https://api.draft5.gg/teams/2253/logo',
+        cor: ['#6D4C41'],
+
+        fundadoEm: '2023',
+
+        jogadorEstrela: {
+            idJogador: 'rcf'
+        },
+
+        modalidades: ['CS2']
+    },
+    {
+        id: 'crashers',
+        nome: 'Crashers',
+        regiao: 'SA',
+        jogoId: 'cs2',
+        imagem: 'https://cdn.escharts.com/uploads/public/687/f49/f1a/687f49f1a9768955732914.png',
+        cor: ['#F4511E'],
+
+        fundadoEm: '2023',
+
+        jogadorEstrela: {
+            idJogador: 'lux'
+        },
+
+        modalidades: ['CS2']
+    },
 ];
 

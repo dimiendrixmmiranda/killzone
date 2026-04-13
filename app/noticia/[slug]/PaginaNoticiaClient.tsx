@@ -221,7 +221,7 @@ export default function PaginaNoticia({ slug }: PaginaNoticiaClient) {
                                                     <div className="relative w-10 h-10">
                                                         <Image alt={`${timeA?.nome}`} src={timeA?.imagem || IMAGEM_TIME_DEFAULT} fill className="object-contain" />
                                                     </div>
-                                                    <h2 className="capitalize font-heading text-3xl">{timeA?.id}</h2>
+                                                    <h2 className="capitalize font-heading text-3xl truncate">{timeA?.id.replaceAll('-', ' ')}</h2>
                                                 </div>
                                                 <ul className="flex flex-col gap-2">
                                                     {jogadoresTimeA?.map((jogador, i) => {
@@ -245,7 +245,7 @@ export default function PaginaNoticia({ slug }: PaginaNoticiaClient) {
                                                     <div className="relative w-10 h-10">
                                                         <Image alt={`${timeB?.nome}`} src={timeB?.imagem || IMAGEM_TIME_DEFAULT} fill className="object-contain" />
                                                     </div>
-                                                    <h2 className="capitalize font-heading text-3xl">{timeB?.id}</h2>
+                                                    <h2 className="capitalize font-heading text-3xl truncate">{timeB?.id.replaceAll('-', ' ')}</h2>
                                                 </div>
                                                 <ul className="flex flex-col gap-2">
                                                     {jogadoresTimeB?.map((jogador, i) => {

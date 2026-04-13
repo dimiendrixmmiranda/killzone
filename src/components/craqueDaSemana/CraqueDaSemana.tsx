@@ -25,6 +25,9 @@ export default function CraqueDaSemana() {
     const [objetoCraque, setObjetoCraque] = useState<any | null>(null)
     const [user, setUser] = useState<any>(undefined)
 
+    const [showConfirmModal, setShowConfirmModal] = useState(false)
+    const [loadingVote, setLoadingVote] = useState(false)
+
     useEffect(() => {
         if (session?.user?.email) {
             fetch("/api/user")
@@ -119,64 +122,40 @@ export default function CraqueDaSemana() {
         checkVote()
     }, [sessionId, user])
 
-    // if (alreadyVoted === null) {
-    //     return <div>Carregando...</div>
-    // }
+    async function confirmVote() {
+        setLoadingVote(true)
 
-    console.log(jogadores)
-    console.log(alreadyVoted)
-    console.log(resultado)
+        try {
+            const res = await fetch("/api/craque/vote", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    userId: user.id,
+                    sessionId,
+                    playerId: jogadorSelecionado?.id
+                })
+            })
 
-    // if (jogadores.length <= 0) {
-    //     return (
-    //         <div className="bg-zinc-950 p-4 mt-4 flex flex-col gap-4">
-    //             <h2 className="w-full h-6 bg-zinc-600"></h2>
-    //             <div className="flex flex-col gap-2">
-    //                 <p className="w-full h-4 bg-zinc-600"></p>
-    //                 <p className="w-full h-4 bg-zinc-600"></p>
-    //             </div>
-    //             <Swiper
-    //                 modules={[Pagination, Navigation, Autoplay]}
-    //                 slidesPerView={1}
-    //                 loop
-    //                 autoplay={{
-    //                     delay: 5000,
-    //                     disableOnInteraction: false,
-    //                 }}
-    //                 spaceBetween={15}
-    //                 breakpoints={{
-    //                     425: {
-    //                         slidesPerView: 2
-    //                     },
-    //                     768: {
-    //                         slidesPerView: 3
-    //                     },
-    //                     1024: {
-    //                         slidesPerView: 4
-    //                     },
-    //                     1440: {
-    //                         slidesPerView: 6
-    //                     }
-    //                 }}
-    //                 pagination={{ clickable: true }}
-    //                 navigation
-    //                 className="h-75 w-full"
-    //             >
-    //                 {Array.from({length: 6}).map((_, i) => {
-    //                     return (
-    //                         <SwiperSlide
-    //                             key={i}
-    //                             className="bg-zinc-600 rounded-xl relative w-full h-full max-w-62.5 mx-2"
-    //                         >
-    //                             <div className="bg-zinc-600 text-black grid grid-rows-[1fr_30px] h-full w-full rounded-xl relative"></div>
-    //                         </SwiperSlide>
-    //                     )
-    //                 })}
-    //             </Swiper>
-    //         </div>
-    //     )
-    // }
-    
+            const data = await res.json()
+
+            if (!res.ok) {
+                alert(data.error)
+                return
+            }
+
+            setAlreadyVoted(true)
+            setShowConfirmModal(false)
+
+        } catch (err) {
+            console.error(err)
+            alert("Erro ao votar")
+        } finally {
+            setLoadingVote(false)
+        }
+    }
+
     return (
         <>
             {
@@ -187,7 +166,7 @@ export default function CraqueDaSemana() {
                         </h2>
                         <div className="flex flex-col justify-center items-center md:flex-row md:justify-between">
                             <h3 className="font-heading text-2xl">Resultado até o momento:</h3>
-                            <Countdown endDate={objetoCraque.endDate} />
+                            <Countdown endDate={objetoCraque?.endDate} />
                             <div className="">
                                 <span className="font-heading text-2xl">
                                     {new Date(objetoCraque.startDate).toLocaleDateString('pt-BR', {
@@ -272,6 +251,9 @@ export default function CraqueDaSemana() {
                             <p>
                                 O Craque da Semana é uma funcionalidade que destaca o jogador de maior destaque no período. A cada semana, 6 atletas pré-selecionados ficam disponíveis para votação do público durante 6 dias; ao final desse prazo, a votação é encerrada e, no 7º dia, o jogador mais votado é anunciado oficialmente como o Craque da Semana.
                             </p>
+                            <div className="flex justify-center mt-4">
+                                <Countdown endDate={objetoCraque?.endDate} />
+                            </div>
                         </div>
                         <div className="flex flex-col gap-6">
                             <div>
@@ -301,13 +283,54 @@ export default function CraqueDaSemana() {
                                 </ul>
                             </div>
                             <button
-                                className="font-heading text-5xl text-center bg-orange-600 w-full pt-1 cursor-pointer" style={{ textShadow: '1px 1px 2px black' }}
-                                onClick={handleSubmit}
+                                className="font-heading text-5xl text-center bg-orange-600 w-full pt-1 cursor-pointer"
+                                style={{ textShadow: '1px 1px 2px black' }}
+                                onClick={() => {
+                                    if (!jogadorSelecionado) {
+                                        alert("Selecione um jogador")
+                                        return
+                                    }
+                                    setShowConfirmModal(true)
+                                }}
                                 disabled={!jogadorSelecionado}
                             >
                                 Votar
                             </button>
                         </div>
+                        {showConfirmModal && (
+                            <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+                                <div className="bg-zinc-900 p-6 rounded-xl w-[90%] max-w-md text-center flex flex-col gap-4">
+
+                                    <h2 className="text-2xl font-heading">
+                                        Confirmar voto
+                                    </h2>
+
+                                    <p>
+                                        Você tem certeza que deseja votar em{" "}
+                                        <span className="text-orange-500 font-bold">
+                                            {jogadorSelecionado?.apelido}
+                                        </span>?
+                                    </p>
+
+                                    <div className="flex gap-4 mt-4">
+                                        <button
+                                            className="flex-1 bg-zinc-700 py-2 rounded"
+                                            onClick={() => setShowConfirmModal(false)}
+                                        >
+                                            Cancelar
+                                        </button>
+
+                                        <button
+                                            className="flex-1 bg-orange-600 py-2 rounded"
+                                            onClick={confirmVote}
+                                            disabled={loadingVote}
+                                        >
+                                            {loadingVote ? "Enviando..." : "Confirmar"}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )
             }

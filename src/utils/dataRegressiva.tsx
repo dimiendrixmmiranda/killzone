@@ -15,7 +15,7 @@ function getDataRegressiva(endDate: string | Date) {
     const hours = Math.floor((total / (1000 * 60 * 60)) % 24);
     const days = Math.floor(total / (1000 * 60 * 60 * 24));
 
-    return `Faltam ${days} dias ${hours} horas ${minutes} min e ${seconds}s`;
+    return `Faltam ${days} dias ${hours} horas ${minutes} min e ${seconds}s para o término da votação!`;
 }
 
 export function Countdown({ endDate }: { endDate: string | Date }) {

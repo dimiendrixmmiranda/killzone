@@ -166,6 +166,11 @@ export default function RankingDaComunidade() {
     const [ranking, setRanking] = useState<any>(null)
     const [activeId, setActiveId] = useState<TimeID | null>(null)
 
+
+    const [showConfirmModal, setShowConfirmModal] = useState(false)
+    const [loadingVote, setLoadingVote] = useState(false)
+
+
     const [rankingState, setRankingState] = useState<{
         timesDisponiveis: string[]
         slots: Slot[]
@@ -349,38 +354,43 @@ export default function RankingDaComunidade() {
         alert("Voto enviado!")
     }
 
-    // Ajustar
-    // if (timesDisponiveis.length <= 0 && alreadyVoted) {
-    //     return (
-    //         <div className="bg-zinc-950 p-4 mt-4 flex flex-col gap-4">
-    //             <h2 className="w-full h-6 bg-zinc-600"></h2>
-    //             <div className="flex flex-col gap-2">
-    //                 <p className="w-full h-4 bg-zinc-600"></p>
-    //                 <p className="w-full h-4 bg-zinc-600"></p>
-    //             </div>
-    //             <div className="flex flex-col gap-6 md:grid md:grid-cols-2">
-    //                 <ul className="flex flex-col gap-2">
-    //                     {
-    //                         Array.from({ length: 10 }).map((_, i) => {
-    //                             return (
-    //                                 <li key={i} className="w-full h-[55px] bg-zinc-600 rounded-lg"></li>
-    //                             )
-    //                         })
-    //                     }
-    //                 </ul>
-    //                 <ul className="flex flex-col gap-2">
-    //                     {
-    //                         Array.from({ length: 10 }).map((_, i) => {
-    //                             return (
-    //                                 <li key={i} className="w-full h-[55px] bg-zinc-600 rounded-lg"></li>
-    //                             )
-    //                         })
-    //                     }
-    //                 </ul>
-    //             </div>
-    //         </div>
-    //     )
-    // }
+    async function confirmVote() {
+        setLoadingVote(true)
+
+        const positions = rankingState.slots.map((slot, index) => ({
+            teamId: slot.timeId,
+            position: index + 1
+        }))
+
+        try {
+            const res = await fetch("/api/rankingComunidade/vote", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    rankingId,
+                    positions
+                })
+            })
+
+            const data = await res.json()
+
+            if (!res.ok) {
+                alert(data.error)
+                return
+            }
+
+            setAlreadyVoted(true)
+            setShowConfirmModal(false)
+
+        } catch (err) {
+            console.error(err)
+            alert("Erro ao votar")
+        } finally {
+            setLoadingVote(false)
+        }
+    }
 
     return (
         <div className="bg-orange-600 flex flex-col gap-4 p-4 mt-4 md:grid md:grid-cols-2">
@@ -456,41 +466,101 @@ export default function RankingDaComunidade() {
                             </ul>
                         </div>
                     ) : (
-                        <div className="col-start-1 col-end-3 flex flex-col gap-4 md:grid md:grid-cols-2">
-                            {/* ===== DISPONÍVEIS ===== */}
-                            <ul className={`flex flex-col gap-2 ${timesDisponiveis.length <= 0 ? 'hidden' : ''}`}>
-                                {timesDisponiveis.map(timeId => (
-                                    <li key={timeId} className="bg-white rounded-md text-black">
-                                        <TimeDraggable timeId={timeId} />
-                                    </li>
-                                ))}
-                            </ul>
+                        <div className="col-start-1 col-end-3 ">
+                            <div className="flex justify-center mb-4" style={{ textShadow: '1px 1px 2px black' }}>
+                                <Countdown endDate={ranking?.endDate} />
+                            </div>
+                            <div className="flex flex-col gap-4 md:grid md:grid-cols-2">
+                                {/* ===== DISPONÍVEIS ===== */}
+                                <ul className={`flex flex-col gap-2 ${timesDisponiveis.length <= 0 ? 'hidden' : ''}`}>
+                                    {timesDisponiveis.map(timeId => (
+                                        <li key={timeId} className="bg-white rounded-md text-black">
+                                            <TimeDraggable timeId={timeId} />
+                                        </li>
+                                    ))}
+                                </ul>
 
-                            {/* ===== RANKING ===== */}
-                            <ul className={`flex flex-col gap-2 mt-4 md:mt-0 ${timesDisponiveis.length <= 0 ? 'grid grid-cols-2 col-start-1 col-end-3' : ''}`}>
-                                {rankingState.slots.map((slot, index) => (
-                                    <RankingSlot key={slot.id} slot={slot} index={index}>
-                                        {slot.timeId && (
-                                            <TimeDraggable
-                                                timeId={slot.timeId}
-                                                onRemove={removerTime}
-                                            />
-                                        )}
-                                    </RankingSlot>
-                                ))}
-                            </ul>
+                                {/* ===== RANKING ===== */}
+                                <ul className={`flex flex-col gap-2 mt-4 md:mt-0 ${timesDisponiveis.length <= 0 ? 'grid grid-cols-2 col-start-1 col-end-3' : ''}`}>
+                                    {rankingState.slots.map((slot, index) => (
+                                        <RankingSlot key={slot.id} slot={slot} index={index}>
+                                            {slot.timeId && (
+                                                <TimeDraggable
+                                                    timeId={slot.timeId}
+                                                    onRemove={removerTime}
+                                                />
+                                            )}
+                                        </RankingSlot>
+                                    ))}
+                                </ul>
 
-                            <button
-                                onClick={handleVote}
-                                className="col-start-1 col-end-3 bg-azul-escuro font-bold text-xl py-3 cursor-pointer"
-                            >
-                                Salvar Votação
-                            </button>
+                                <button
+                                    onClick={() => {
+                                        const filled = rankingState.slots.filter(s => s.timeId).length
 
-                            {/* 🔥 ESSENCIAL PRO MOBILE */}
-                            <DragOverlay>
-                                {activeId ? <TimeCard timeId={activeId} /> : null}
-                            </DragOverlay>
+                                        if (filled !== 10) {
+                                            alert("Preencha todos os slots")
+                                            return
+                                        }
+
+                                        setShowConfirmModal(true)
+                                    }}
+                                    className="col-start-1 col-end-3 bg-azul-escuro font-bold text-xl py-3 cursor-pointer"
+                                >
+                                    Salvar Votação
+                                </button>
+
+                                {/* 🔥 ESSENCIAL PRO MOBILE */}
+                                <DragOverlay>
+                                    {activeId ? <TimeCard timeId={activeId} /> : null}
+                                </DragOverlay>
+
+                                {showConfirmModal && (
+                                    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+                                        <div className="bg-zinc-900 p-6 rounded-xl w-[90%] max-w-lg text-center flex flex-col gap-4">
+
+                                            <h2 className="text-2xl font-heading">
+                                                Confirmar Ranking
+                                            </h2>
+
+                                            <p className="text-sm text-zinc-300">
+                                                Confira seu Top 3 antes de enviar:
+                                            </p>
+
+                                            <ul className="flex flex-col gap-2 text-left">
+                                                {rankingState.slots.slice(0, 3).map((slot, index) => {
+                                                    if (!slot.timeId) return null
+                                                    const time = getTeamById(slot.timeId)
+
+                                                    return (
+                                                        <li key={slot.id} className="flex items-center gap-2">
+                                                            <span className="font-bold">{index + 1}º</span>
+                                                            <span>{time?.nome}</span>
+                                                        </li>
+                                                    )
+                                                })}
+                                            </ul>
+
+                                            <div className="flex gap-4 mt-4">
+                                                <button
+                                                    className="flex-1 bg-zinc-700 py-2 rounded"
+                                                    onClick={() => setShowConfirmModal(false)}
+                                                >
+                                                    Voltar
+                                                </button>
+
+                                                <button
+                                                    className="flex-1 bg-orange-600 py-2 rounded"
+                                                    onClick={confirmVote}
+                                                    disabled={loadingVote}
+                                                >
+                                                    {loadingVote ? "Enviando..." : "Confirmar Ranking"}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     )
                 }

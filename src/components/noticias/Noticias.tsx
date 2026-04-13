@@ -130,6 +130,7 @@ export default function Noticias({ time }: NoticiasProps) {
                 rows={rows}
                 totalRecords={noticiasFiltradas.length}
                 onPageChange={onPageChange}
+                template="PrevPageLink PageLinks NextPageLink"
             />
         </div>
     )

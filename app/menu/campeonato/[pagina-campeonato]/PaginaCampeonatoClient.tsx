@@ -92,7 +92,7 @@ export default function PaginaCampeonatoClient({ idCampeonato }: Props) {
                 <DadosDoCampeonato campeonato={campeonatoAtual} />
                 <JogosDoCampeonato partidas={partidasDoCampeonato} />
                 <CampeonatoRelacionado campeonatoAtual={campeonatoAtual} />
-                <div className="lg:grid lg:grid-cols-2 lg:gap-10 2xl:grid-cols-3">
+                <div className={`lg:grid lg:grid-cols-2 lg:gap-10 ${campeonatoAtual.formato === 'gsl-format' || campeonatoAtual.formato === 'playoff' ? ('2xl:grid-cols-[700px_1fr]') : ('2xl:grid-cols-3')}`}>
                     <TabelaDoCampeonato campeonato={campeonatoAtual} />
                     <NoticiasDoCampeonato campeonato={campeonatoAtual}/>
                 </div>

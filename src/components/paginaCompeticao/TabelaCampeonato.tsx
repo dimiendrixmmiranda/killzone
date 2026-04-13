@@ -175,14 +175,14 @@ export default function TabelaDoCampeonato({ campeonato }: TabelaDoCampeonatoPro
                                         <div className="relative w-5 h-5">
                                             <Image src={timeA?.imagem || IMAGEM_TIME_DEFAULT} alt="" fill />
                                         </div>
-                                        <span className="capitalize">{partida?.timeAId}</span>
+                                        <span className="capitalize">{partida?.timeAId.replaceAll('-', ' ')}</span>
                                     </div>
 
                                     <div className="flex items-center gap-2">
                                         <div className="relative w-5 h-5">
                                             <Image src={timeB?.imagem || IMAGEM_TIME_DEFAULT} alt="" fill />
                                         </div>
-                                        <span className="capitalize">{partida?.timeBId}</span>
+                                        <span className="capitalize">{partida?.timeBId.replaceAll('-', ' ')}</span>
                                     </div>
                                 </div>
 
