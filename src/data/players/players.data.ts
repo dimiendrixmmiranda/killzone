@@ -5,6 +5,7 @@ export const players: Jogador[] = [
     // furia
     {
         id: "FalleN",
+        categoria: 'prata',
         nome: "Gabriel Toledo",
         apelido: "FalleN",
         pais: "br",
@@ -219,6 +220,7 @@ export const players: Jogador[] = [
     },
     {
         id: "kscerato",
+        categoria: 'prata',
         nome: "Kaike Cerato",
         apelido: "KSCERATO",
         pais: "br",
@@ -234,6 +236,7 @@ export const players: Jogador[] = [
     },
     {
         id: "yuurih",
+        categoria: 'prata',
         nome: "Yuri Santos",
         apelido: "yuurih",
         pais: "br",
@@ -249,6 +252,7 @@ export const players: Jogador[] = [
     },
     {
         id: "yekindar",
+        categoria: 'prata',
         nome: "Mareks Gaļinskis",
         apelido: "YEKINDAR",
         pais: "lv",
@@ -264,6 +268,7 @@ export const players: Jogador[] = [
     },
     {
         id: "molodoy",
+        categoria: 'prata',
         nome: "Danil Golubenko",
         apelido: "molodoy",
         pais: "kz",
@@ -280,6 +285,7 @@ export const players: Jogador[] = [
     // imperial
     {
         id: "vini",
+        categoria: 'prata',
         nome: "Vinicius Figueiredo",
         apelido: "VINI",
         pais: "br",
@@ -295,6 +301,7 @@ export const players: Jogador[] = [
     },
     {
         id: "noway",
+        categoria: 'prata',
         nome: "Kaiky Santos",
         apelido: "noway",
         pais: "br",
@@ -310,6 +317,7 @@ export const players: Jogador[] = [
     },
     {
         id: "chelo",
+        categoria: 'prata',
         nome: "Marcelo Cespedes",
         apelido: "chelo",
         pais: "br",
@@ -325,6 +333,7 @@ export const players: Jogador[] = [
     },
     {
         id: "decenty",
+        categoria: 'prata',
         nome: "Lucas Bacelar",
         apelido: "decenty",
         pais: "br",
@@ -340,6 +349,7 @@ export const players: Jogador[] = [
     },
     {
         id: "levi",
+        categoria: 'prata',
         nome: "Guilherme Gustavo Godoy",
         apelido: "levi",
         pais: "br",
@@ -357,6 +367,7 @@ export const players: Jogador[] = [
     // aleatorios
     {
         id: "makazze",
+        categoria: 'prata',
         nome: "Maksim Karpovich",
         apelido: "makazze",
         pais: "ru",

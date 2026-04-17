@@ -10,6 +10,7 @@ export async function POST(req: Request) {
             idade: body.idade,
             apelido: body.apelido,
             pais: body.pais,
+            categoria: body.categoria,
             imagem: body.imagem,
             jogoId: body.jogoId,
             timeAtual: body.timeAtual,

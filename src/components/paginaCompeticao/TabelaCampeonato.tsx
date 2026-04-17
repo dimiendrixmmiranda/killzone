@@ -259,6 +259,7 @@ export default function TabelaDoCampeonato({ campeonato }: TabelaDoCampeonatoPro
                     partidas.filter(partida => partida.fase === 'lower-final' && partida.grupo === 'a') :
                     partidas.filter(partida => partida.fase === 'lower-final' && partida.grupo === 'b')
 
+
                 return (
                     <div className="flex flex-col gap-4">
                         <div className="flex gap-2">
@@ -394,7 +395,7 @@ export default function TabelaDoCampeonato({ campeonato }: TabelaDoCampeonatoPro
                                 <h2 className="font-heading text-2xl uppercase w-fit bg-red-600 px-2 text-white " style={{ textShadow: '1px 1px 2px black' }}>Lower</h2>
                                 <div className="flex">
                                     {
-                                        partidasSemifinal.length > 0 ? (
+                                        partidasAtivasLower1.length > 0 ? (
                                             <ul className="flex flex-col justify-around gap-10">
                                                 <li>
                                                     {
@@ -424,7 +425,7 @@ export default function TabelaDoCampeonato({ campeonato }: TabelaDoCampeonatoPro
                                     }
                                     {/* round 2 lower */}
                                     {
-                                        partidasSemifinal.length > 0 ? (
+                                        partidasAtivasLower2.length > 0 ? (
                                             <ul className="flex flex-col justify-around gap-10">
                                                 <li>
                                                     {

@@ -22,6 +22,7 @@ model User {
   votes     Vote[]
   playerVotes PlayerVote[]
   pickems   Pickem[] 
+  fantasies Fantasy[]
 }
 
 model Tag {
@@ -91,6 +92,7 @@ model Campeonato {
 
   createdAt DateTime @default(now())
   pickems   Pickem[]
+  fantasies Fantasy[]
 }
 
 model Video {
@@ -182,6 +184,7 @@ model Jogador {
   votes       PlayerVote[]
   
   transferencias Transferencia[]
+  categoria String?
 }
 
 model PlayerVoteSession {
@@ -272,4 +275,21 @@ model Pickem {
   updatedAt      DateTime   @updatedAt
 
   @@unique([userId, campeonatoId]) // 1 pickem por usuário por campeonato
+}
+
+model Fantasy {
+  id             String   @id @default(cuid())
+
+  userId         String
+  campeonatoId   String
+
+  user           User        @relation(fields: [userId], references: [id])
+  campeonato     Campeonato  @relation(fields: [campeonatoId], references: [id])
+
+  slots          Json       // 🔥 aqui vai seu timeFantasy
+
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@unique([userId, campeonatoId]) // 🔥 REGRA PRINCIPAL
 }

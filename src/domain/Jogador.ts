@@ -13,7 +13,8 @@ export interface Jogador {
     highlights: string
     papel: string
     estilo: string
-
+    categoria: string | null
+    
     forma?: {
         resultado: 'V' | 'D' | 'E'
         rating: number

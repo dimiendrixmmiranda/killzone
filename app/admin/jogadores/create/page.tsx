@@ -14,7 +14,7 @@ export default function Page() {
     const [highlights, setHighlights] = useState("")
     const [papel, setPapel] = useState("")
     const [estilo, setEstilo] = useState("")
-
+    const [categoria, setCategoria] = useState("")
     async function handleSubmit() {
         await fetch("/api/jogador", {
             method: "POST",
@@ -23,6 +23,7 @@ export default function Page() {
             },
             body: JSON.stringify({
                 nome,
+                categoria,
                 idade,
                 apelido,
                 pais,

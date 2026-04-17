@@ -414,7 +414,7 @@ export default function RankingDaComunidade() {
                         <div className="col-start-1 col-end-3 flex flex-col gap-4 md:grid md:grid-cols-2">
                             <div className="flex flex-col justify-center items-center col-start-1 col-end-3 md:flex-row md:justify-between">
                                 <h3 className="font-heading text-2xl">Resultado até o momento:</h3>
-                                <Countdown endDate={ranking.endDate} />
+                                <Countdown endDate={ranking.endDate} frase="para o término da votação!"/>
                                 <div className="">
                                     <span className="font-heading text-2xl">
                                         {new Date(ranking.startDate).toLocaleDateString('pt-BR', {
@@ -468,7 +468,7 @@ export default function RankingDaComunidade() {
                     ) : (
                         <div className="col-start-1 col-end-3 ">
                             <div className="flex justify-center mb-4" style={{ textShadow: '1px 1px 2px black' }}>
-                                <Countdown endDate={ranking?.endDate} />
+                                <Countdown endDate={ranking?.endDate} frase="para o término da votação!"/>
                             </div>
                             <div className="flex flex-col gap-4 md:grid md:grid-cols-2">
                                 {/* ===== DISPONÍVEIS ===== */}

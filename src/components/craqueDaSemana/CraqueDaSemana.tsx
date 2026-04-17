@@ -166,7 +166,7 @@ export default function CraqueDaSemana() {
                         </h2>
                         <div className="flex flex-col justify-center items-center md:flex-row md:justify-between">
                             <h3 className="font-heading text-2xl">Resultado até o momento:</h3>
-                            <Countdown endDate={objetoCraque?.endDate} />
+                            <Countdown endDate={objetoCraque?.endDate} frase="para o término da votação!"/>
                             <div className="">
                                 <span className="font-heading text-2xl">
                                     {new Date(objetoCraque.startDate).toLocaleDateString('pt-BR', {
@@ -252,7 +252,7 @@ export default function CraqueDaSemana() {
                                 O Craque da Semana é uma funcionalidade que destaca o jogador de maior destaque no período. A cada semana, 6 atletas pré-selecionados ficam disponíveis para votação do público durante 6 dias; ao final desse prazo, a votação é encerrada e, no 7º dia, o jogador mais votado é anunciado oficialmente como o Craque da Semana.
                             </p>
                             <div className="flex justify-center mt-4">
-                                <Countdown endDate={objetoCraque?.endDate} />
+                                <Countdown endDate={objetoCraque?.endDate} frase="para o término da votação!"/>
                             </div>
                         </div>
                         <div className="flex flex-col gap-6">

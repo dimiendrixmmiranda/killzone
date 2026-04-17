@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-function getDataRegressiva(endDate: string | Date) {
+function getDataRegressiva(endDate: string | Date, frase: string) {
     const end = new Date(endDate).getTime();
     const now = Date.now();
 
@@ -15,15 +15,20 @@ function getDataRegressiva(endDate: string | Date) {
     const hours = Math.floor((total / (1000 * 60 * 60)) % 24);
     const days = Math.floor(total / (1000 * 60 * 60 * 24));
 
-    return `Faltam ${days} dias ${hours} horas ${minutes} min e ${seconds}s para o término da votação!`;
+    return `Faltam ${days} dias ${hours} horas ${minutes} min e ${seconds}s ${frase}`;
 }
 
-export function Countdown({ endDate }: { endDate: string | Date }) {
+interface CountdownProps{
+    endDate: string | Date
+    frase: string
+}
+
+export function Countdown({endDate, frase}: CountdownProps) {
     const [time, setTime] = useState("");
 
     useEffect(() => {
         const updateTime = () => {
-            setTime(getDataRegressiva(endDate));
+            setTime(getDataRegressiva(endDate, frase));
         };
 
         updateTime(); // atualiza na primeira render

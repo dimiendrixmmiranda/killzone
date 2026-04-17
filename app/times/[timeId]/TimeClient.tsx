@@ -45,6 +45,7 @@ export default function TimeClient({
         jogoId: "",
         timeAtual: "",
         status: "default",
+        categoria: 'ouro',
         sinergia: 0,
         highlights: "",
         papel: "rifler",

@@ -75,6 +75,9 @@ export default function ClassificacaoFinal({ idCampeonato }: ClassificacaoFinalP
                             let posicaoGrid = ''
 
                             switch (timeClassificacao.resultadoSuica) {
+                                case '-':
+                                    posicaoGrid = 'md:col-span-3'
+                                    break;
                                 case '1º':
                                     posicaoGrid = 'col-start-1 col-end-13'
                                     break;
@@ -130,7 +133,7 @@ export default function ClassificacaoFinal({ idCampeonato }: ClassificacaoFinalP
                                     const primeiros = classificacao.filter(t => t.resultadoSuica === '3-2')
                                     const indexDentroDoGrupo = primeiros.findIndex(t => t.timeId === timeClassificacao.timeId)
 
-                                   if (indexDentroDoGrupo === 0) {
+                                    if (indexDentroDoGrupo === 0) {
                                         posicaoGrid = 'md:col-start-1 md:col-end-5'
                                     } else if (indexDentroDoGrupo === 1) {
                                         posicaoGrid = 'md:col-start-5 md:col-end-9'
@@ -156,7 +159,7 @@ export default function ClassificacaoFinal({ idCampeonato }: ClassificacaoFinalP
                                     const primeiros = classificacao.filter(t => t.resultadoSuica === '1-3')
                                     const indexDentroDoGrupo = primeiros.findIndex(t => t.timeId === timeClassificacao.timeId)
 
-                                   if (indexDentroDoGrupo === 0) {
+                                    if (indexDentroDoGrupo === 0) {
                                         posicaoGrid = 'md:col-start-1 md:col-end-5'
                                     } else if (indexDentroDoGrupo === 1) {
                                         posicaoGrid = 'md:col-start-5 md:col-end-9'
@@ -201,10 +204,45 @@ export default function ClassificacaoFinal({ idCampeonato }: ClassificacaoFinalP
                                         }
                                         break;
                                     }
+                                case '13º/16º':
+                                    {
+                                        const primeiros = classificacao.filter(t => t.resultadoSuica === '13º/16º')
+                                        console.log(primeiros)
+                                        const indexDentroDoGrupo = primeiros.findIndex(t => t.timeId === timeClassificacao.timeId)
+
+                                        if (indexDentroDoGrupo === 0) {
+                                            posicaoGrid = 'md:col-span-3'
+                                        } else if (indexDentroDoGrupo === 1) {
+                                            posicaoGrid = 'md:col-span-3'
+                                        } else if (indexDentroDoGrupo === 2) {
+                                            posicaoGrid = 'md:col-span-3'
+                                        } else if (indexDentroDoGrupo === 3) {
+                                            posicaoGrid = 'md:col-span-3'
+                                        }
+                                        break;
+                                    }
+                                case '9º/12º':
+                                    {
+                                        const primeiros = classificacao.filter(t => t.resultadoSuica === '9º/12º')
+                                        console.log(primeiros)
+                                        const indexDentroDoGrupo = primeiros.findIndex(t => t.timeId === timeClassificacao.timeId)
+
+                                        if (indexDentroDoGrupo === 0) {
+                                            posicaoGrid = 'md:col-span-3'
+                                        } else if (indexDentroDoGrupo === 1) {
+                                            posicaoGrid = 'md:col-span-3'
+                                        } else if (indexDentroDoGrupo === 2) {
+                                            posicaoGrid = 'md:col-span-3'
+                                        } else if (indexDentroDoGrupo === 3) {
+                                            posicaoGrid = 'md:col-span-3'
+                                        }
+                                        break;
+                                    }
                                 default:
                                     break;
                             }
-                            // console.log(timeClassificacao)
+                            console.log(timeClassificacao)
+                            console.log(i)
                             return (
                                 <div key={i} className={`${posicaoGrid}`} style={{ textShadow: '1px 1px 2px black' }}>
                                     {
@@ -237,6 +275,7 @@ export default function ClassificacaoFinal({ idCampeonato }: ClassificacaoFinalP
                                                     bg-zinc-700
                                                     ${campeonatoAtual?.formato === 'suico' && i < 8 && timeClassificacao.encerrouParticipacao ? 'bg-green-600!' : ''}
                                                     ${campeonatoAtual?.formato === 'suico' && i >= 8 && timeClassificacao.encerrouParticipacao ? 'bg-red-600!' : ''}
+                                                    ${campeonatoAtual?.formato === 'gsl-format' && i >= 6 && timeClassificacao.encerrouParticipacao ? 'bg-red-600!' : ''}
                                                 `}
                                             >
                                                 <div className="flex flex-col justify-center items-center gap-1 xl:flex-row xl:w-full">
