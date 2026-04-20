@@ -7,12 +7,14 @@ import { Paginator } from 'primereact/paginator'
 import { Noticia } from "@/src/domain/Noticia"
 import CardNoticia from "../cardNoticia/CardNoticia"
 import { Time } from "@/src/domain/Time"
+import { useBreakpoints } from "@/src/utils/useTamanhoDeTela"
 
 interface NoticiasProps {
     time?: Time
 }
 
 export default function Noticias({ time }: NoticiasProps) {
+    const { isLg } = useBreakpoints()
     const [noticias, setNoticias] = useState<Noticia[]>([])
     const [noticiasJogoAtual, setNoticiasJogoAtual] = useState<'geral' | 'cs2' | 'valorant' | 'lol'>('geral')
     const [noticiasFiltradas, setNoticiasFiltradas] = useState<Noticia[]>([])
@@ -20,6 +22,7 @@ export default function Noticias({ time }: NoticiasProps) {
     const rows = 6 // quantidade por página
 
     const topRef = useRef<HTMLDivElement | null>(null)
+    const offset = isLg ? 9 : 6
 
     const onPageChange = (event: any) => {
         setFirst(event.first)
@@ -118,7 +121,7 @@ export default function Noticias({ time }: NoticiasProps) {
                         ))
                     ) : (
                         noticiasFiltradas
-                            .slice(first, first + rows)
+                            .slice(offset + first, offset + first + rows)
                             .map((noticia, i) => (
                                 <CardNoticia noticia={noticia} i={i} key={noticia.id} fonteTitulo="md:text-2xl xl:text-3xl" fonteSubitulo="md:text-lg md:flex-1 xl:text-xl line-clamp-2" tamanhoCard="md:h-[190px] xl:h-[260px]" />
                             ))

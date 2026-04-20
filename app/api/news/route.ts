@@ -77,3 +77,20 @@ export async function GET() {
         return Response.json({ error: err.message }, { status: 500 })
     }
 }
+
+export async function DELETE(req: Request) {
+    try {
+        const { id } = await req.json()
+
+        console.log("Deletando ID:", id)
+
+        await prisma.news.delete({
+            where: { id }
+        })
+
+        return Response.json({ ok: true })
+    } catch (err: any) {
+        console.error("ERRO AO DELETAR:", err)
+        return Response.json({ error: err.message }, { status: 500 })
+    }
+}

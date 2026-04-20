@@ -15,6 +15,7 @@ import { useEffect, useState } from "react"
 import { Noticia } from "@/src/domain/Noticia"
 import { useSession } from "next-auth/react"
 import InterfaceComentario from "@/src/domain/Comentario"
+import { formatarData } from "@/src/utils/utils"
 
 interface PaginaNoticiaClient {
     slug: string
@@ -136,6 +137,7 @@ export default function PaginaNoticia({ slug }: PaginaNoticiaClient) {
                 <div className="flex flex-col gap-3">
                     <h2 className="font-heading text-4xl font-bold lg:text-6xl">{noticiaAtual.titulo}</h2>
                     <h3 className="text-lg font-semibold lg:text-2xl">{noticiaAtual.resumo}</h3>
+                    <span>{noticiaAtual.autor} {"-"} {formatarData(noticiaAtual.dataPublicacao!)}</span>
                 </div>
 
                 <div>

@@ -134,22 +134,22 @@ export default function CarrosselWeb({ time }: CarrosselWebProps) {
             {/* SETA ESQUERDA */}
             <button
                 onClick={anterior}
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-10 cursor-pointer text-4xl text-white font-black"
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-10 cursor-pointer text-4xl text-white font-black bg-magenta rounded-full p-2"
                 aria-label="Notícia anterior"
             >
-                <div className="w-10 h-10 relative">
-                    <Image alt="arro left" src={'/default/arrow-left.png'} fill className="object-contain" />
+                <div className="w-8 h-8 relative">
+                    <Image alt="arro left" src={'/default/seta/esquerda.png'} fill className="object-contain" unoptimized />
                 </div>
             </button>
 
             {/* SETA DIREITA */}
             <button
                 onClick={proximo}
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-10 cursor-pointer text-4xl text-white font-black"
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-10 cursor-pointer text-4xl text-white font-black bg-magenta rounded-full p-2"
                 aria-label="Próxima notícia"
             >
-                <div className="w-10 h-10 relative">
-                    <Image alt="arro left" src={'/default/arrow-right.png'} fill className="object-contain" />
+                <div className="w-8 h-8 relative">
+                    <Image alt="arro right" src={'/default/seta/direita.png'} fill className="object-contain" unoptimized />
                 </div>
             </button>
 

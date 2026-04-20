@@ -37,3 +37,16 @@ export function determinarDataEHoraPartida(partida: Partida) {
         </p>
     )
 }
+
+export function formatarData(dataISO: string): string {
+    const data = new Date(dataISO)
+
+    const dia = data.getDate()
+    const mes = data.toLocaleString('pt-BR', { month: 'long' })
+    const ano = data.getFullYear()
+
+    const hora = data.getHours().toString().padStart(2, '0')
+    const minuto = data.getMinutes().toString().padStart(2, '0')
+
+    return `${dia} de ${mes} de ${ano}, às ${hora}:${minuto}`
+}

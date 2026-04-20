@@ -20,7 +20,7 @@ export default function Page() {
                     camp.fim
                 )
 
-                return situacao === "ocorrendo" || situacao === "futuro" // vai mudar para so futuro depois
+                return situacao === "ocorrendo" || situacao === "futuro" || situacao === 'encerrado' // vai mudar para so futuro depois
             })
 
             setCampeonatos(campeonatosEncerrados)

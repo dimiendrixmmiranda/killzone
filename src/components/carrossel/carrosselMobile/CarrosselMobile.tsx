@@ -66,7 +66,7 @@ export default function CarrosselMobile({ time }: CarrosselMobileProps) {
                 navigation
                 className="w-full h-full"
             >
-                {noticias.slice(0, 5).map((noticia) => (
+                {noticias.slice(0, 6).map((noticia) => (
                     <SwiperSlide key={noticia.id}>
                         <Link href={`/noticia/${noticia.id}`} className="block relative h-95">
                             <Image
