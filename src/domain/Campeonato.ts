@@ -20,7 +20,7 @@ export interface Campeonato {
     pickem?: boolean
     // formato
     campeonatosRelacionados?: string[]
-    formato: 'suico' | 'playoff' | 'gsl-format' | 'gsl-format-playoff'
+    formato: 'suico' | 'playoff' | 'gsl-format' | 'gsl-format-playoff' | 'gsl-format-simple'
     mvp?: string | null
     createdAt?: Date
 }

@@ -58,11 +58,23 @@ export async function GET(req: Request) {
         return Response.json({ error: "Usuário não encontrado" })
     }
 
+    // 🔥 SE NÃO VIER campeonatoId → retorna TODOS
+    if (!campeonatoId) {
+        const fantasys = await prisma.fantasy.findMany({
+            where: {
+                userId: user.id
+            }
+        })
+
+        return Response.json(fantasys)
+    }
+
+    // 🔥 SE VIER → retorna específico
     const fantasy = await prisma.fantasy.findUnique({
         where: {
             userId_campeonatoId: {
                 userId: user.id,
-                campeonatoId: campeonatoId!
+                campeonatoId
             }
         }
     })

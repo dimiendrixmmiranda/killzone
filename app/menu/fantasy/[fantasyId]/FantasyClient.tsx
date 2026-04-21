@@ -52,6 +52,7 @@ export default function FantasyClient({ idCampeonato }: FantasyClientProps) {
     const [campoSelecionado, setCampoSelecionado] = useState<number | null>(null)
     const [modal, setModal] = useState<"confirmar" | "erro" | null>(null)
     const [mensagemErro, setMensagemErro] = useState<string>("")
+    const [podeEscalar, setPodeEscalar] = useState(true)
 
     const [timeFantasy, setTimeFantasy] = useState<Slot[]>(
         POSICOES.map(pos => ({
@@ -67,6 +68,11 @@ export default function FantasyClient({ idCampeonato }: FantasyClientProps) {
     const [flippedJogadores, setFlippedJogadores] = useState<number | null>(null)
 
     const camposRef = useRef<Array<HTMLLIElement | null>>([])
+
+    useEffect(() => {
+        const podeEscalar = podeEscalarFantasy(campeonatoAtual?.inicio!)
+        setPodeEscalar(podeEscalar)
+    }, [campeonatoAtual])
 
     useEffect(() => {
         async function fetchCampeonatos() {
@@ -435,6 +441,13 @@ export default function FantasyClient({ idCampeonato }: FantasyClientProps) {
         }, 0)
     }
 
+    function podeEscalarFantasy(dataInicio: string | Date) {
+        const agora = new Date()
+        const inicio = new Date(dataInicio)
+
+        return agora < inicio
+    }
+
     if (listaDeJogadoresDisponiveis.length <= 0) {
         return (
             <Template>
@@ -555,16 +568,19 @@ export default function FantasyClient({ idCampeonato }: FantasyClientProps) {
                                                             <TbCircleLetterCFilled />
                                                         </button>
                                                     )}
-
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation()
-                                                            removerJogador(index)
-                                                        }}
-                                                        className="absolute bottom-2 right-1 text-lg p-1 bg-red-600 rounded-full"
-                                                    >
-                                                        <RiDeleteBin6Fill />
-                                                    </button>
+                                                    {
+                                                        podeEscalar ? (
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation()
+                                                                    removerJogador(index)
+                                                                }}
+                                                                className="absolute bottom-2 right-1 text-lg p-1 bg-red-600 rounded-full"
+                                                            >
+                                                                <RiDeleteBin6Fill />
+                                                            </button>
+                                                        ) : ''
+                                                    }
                                                     <button
                                                         onClick={(e) => {
                                                             e.stopPropagation()
@@ -626,7 +642,7 @@ export default function FantasyClient({ idCampeonato }: FantasyClientProps) {
                         </ul>
 
                         <div className="flex items-center">
-                            <div className="font-heading text-4xl">
+                            <div className={`font-heading text-4xl ${podeEscalar ? 'hidden' : 'flex'}`}>
                                 <h4>
                                     Pontuação total até o momento:{" "}
                                     <b>{calcularPontuacaoTotalTime().toFixed(2)} pts</b>
@@ -636,8 +652,9 @@ export default function FantasyClient({ idCampeonato }: FantasyClientProps) {
                             <div className="bg-zinc-950 rounded-2xl text-white grid grid-cols-2 max-w-[400px] ml-auto gap-6 p-2">
                                 <button
                                     onClick={removerTodosJogadores}
-                                    className="flex items-center gap-1 p-2 font-heading text-2xl bg-red-500 rounded-2xl"
+                                    className={`flex items-center gap-1 p-2 font-heading text-2xl bg-red-500 rounded-2xl ${podeEscalar ? 'opacity-100' : 'opacity-50'}`}
                                     style={{ textShadow: "1px 1px 2px black" }}
+                                    disabled={!podeEscalar}
                                 >
                                     <RiDeleteBin7Fill />
                                     <p>Apagar Fantasy</p>
@@ -645,8 +662,9 @@ export default function FantasyClient({ idCampeonato }: FantasyClientProps) {
 
                                 <button
                                     onClick={handleAbrirConfirmacao}
-                                    className="flex items-center gap-1 p-2 font-heading text-2xl bg-green-500 rounded-2xl"
+                                    className={`flex items-center gap-1 p-2 font-heading text-2xl bg-green-500 rounded-2xl ${podeEscalar ? 'opacity-100' : 'opacity-50'}`}
                                     style={{ textShadow: "1px 1px 2px black" }}
+                                    disabled={!podeEscalar}
                                 >
                                     <FaCheckCircle />
                                     <p>Confirmar Fantasy</p>
@@ -657,134 +675,148 @@ export default function FantasyClient({ idCampeonato }: FantasyClientProps) {
 
                     {/* Lista de Jogadores */}
                     <div className="flex flex-col gap-4">
-                        <h3 className="font-heading text-3xl">
-                            Lista de Jogadores disponíveis:
-                        </h3>
+                        {
+                            podeEscalar ? (
+                                <div className="flex flex-col gap-4">
+                                    <h3 className="font-heading text-3xl">
+                                        Lista de Jogadores disponíveis:
+                                    </h3>
 
-                        <ul className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-                            {listaDeJogadoresDisponiveis.map((jogador, index) => {
-                                const media = getMediaUltimasPartidas(jogador.apelido)
-                                return (
-                                    <li
-                                        key={jogador.id}
-                                        className="w-full h-[230px] max-w-[220px] perspective mx-auto sm:h-[280px]"
-                                        onClick={() => selecionarJogador(jogador)}
-                                    >
-                                        <div
-                                            className={`relative w-full h-full duration-500 transform-style preserve-3d ${flippedJogadores === index ? "rotate-y-180" : ""}`}
-                                        >
-                                            {/* frente */}
-                                            <div
-                                                className="absolute w-full h-full backface-hidden bg-azul-escuro flex flex-col"
-                                                style={{
-                                                    backgroundImage: `url(${getBgByCategoria(jogador?.categoria!)})`,
-                                                    backgroundSize: "cover",
-                                                    backgroundPosition: "center"
-                                                }}>
-                                                <div className="grid grid-rows-[1fr_30px] relative w-full h-full md:grid-rows-[1fr_40px]">
-                                                    <div className="relative w-full h-full">
-                                                        <Image
-                                                            alt={jogador.nome}
-                                                            src={jogador.imagem || IMAGEM_JOGADOR_DEFAULT}
-                                                            fill
-                                                            className="object-cover"
-                                                        />
-                                                    </div>
-
-                                                    <h2 className="bg-white text-black text-center font-heading text-xl flex items-center justify-center md:text-2xl">
-                                                        {jogador.apelido}
-                                                    </h2>
-
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation()
-                                                            setFlippedJogadores(prev => prev === index ? null : index)
-                                                        }}
-                                                        className="absolute top-1 right-1 text-white bg-azul-escuro rounded-full p-1"
-                                                    >
-                                                        <BsArrowRepeat />
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            {/* verso */}
-                                            <div className="absolute w-full h-full backface-hidden rotate-y-180 bg-black text-white flex flex-col items-center justify-center">
-                                                <div className="w-full h-full flex flex-col justify-center items-center">
-                                                    <h2 className="font-heading text-xl">Estatísticas</h2>
-                                                    <ul className="flex flex-col gap-1 text-sm w-full px-4">
-                                                        {renderizarCampoPontuacao('Kills', media?.kills.toString()!, false)}
-                                                        {renderizarCampoPontuacao('Mortes', media?.deaths.toString()!, false)}
-                                                        {renderizarCampoPontuacao('ADR', media?.adr.toString()!, false)}
-                                                        {renderizarCampoPontuacao('Assistência', media?.assists.toString()!, false)}
-                                                        {renderizarCampoPontuacao('Assistência Flash', media?.assistFlash.toString()!, false)}
-                                                        {renderizarCampoPontuacao('Clutchs', media?.clutchVitorias.toString()!, false)}
-                                                        {renderizarCampoPontuacao('Primeira Kill', media?.firstKills.toString()!, false)}
-                                                        {renderizarCampoPontuacao('Primeiro a Morrer', media?.firtsDeaths.toString()!, false)}
-                                                        {renderizarCampoPontuacao('Headshots', media?.headshots.toString()!, false)}
-                                                        {renderizarCampoPontuacao('Traded', media?.traded.toString()!, false)}
-                                                    </ul>
-                                                </div>
-
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation()
-                                                        setFlippedJogadores(prev => prev === index ? null : index)
-                                                    }}
-                                                    className="absolute top-2 right-2 text-white"
+                                    <ul className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+                                        {listaDeJogadoresDisponiveis.map((jogador, index) => {
+                                            const media = getMediaUltimasPartidas(jogador.apelido)
+                                            return (
+                                                <li
+                                                    key={jogador.id}
+                                                    className="w-full h-[230px] max-w-[220px] perspective mx-auto sm:h-[280px]"
+                                                    onClick={() => selecionarJogador(jogador)}
                                                 >
-                                                    <BsArrowRepeat />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </li>
-                                )
-                            })}
-                        </ul>
+                                                    <div
+                                                        className={`relative w-full h-full duration-500 transform-style preserve-3d ${flippedJogadores === index ? "rotate-y-180" : ""}`}
+                                                    >
+                                                        {/* frente */}
+                                                        <div
+                                                            className="absolute w-full h-full backface-hidden bg-azul-escuro flex flex-col"
+                                                            style={{
+                                                                backgroundImage: `url(${getBgByCategoria(jogador?.categoria!)})`,
+                                                                backgroundSize: "cover",
+                                                                backgroundPosition: "center"
+                                                            }}>
+                                                            <div className="grid grid-rows-[1fr_30px] relative w-full h-full md:grid-rows-[1fr_40px]">
+                                                                <div className="relative w-full h-full">
+                                                                    <Image
+                                                                        alt={jogador.nome}
+                                                                        src={jogador.imagem || IMAGEM_JOGADOR_DEFAULT}
+                                                                        fill
+                                                                        className="object-cover"
+                                                                    />
+                                                                </div>
 
-                        {/* Accordion de pontuação */}
-                        <Accordion>
-                            {jogadoresOrdenados.map((jogador) => {
-                                const time = getTeamById(jogador.timeAtual)
-                                const pontuacao = getPontuacaoDetalhadaJogadorNoCampeonato(
-                                    idCampeonato,
-                                    jogador.apelido,
-                                    listaDeJogadores
-                                )
-                                return (
-                                    <AccordionTab
-                                        key={jogador.id}
-                                        header={
-                                            <div className="flex items-center">
-                                                <div className="relative w-8 h-8">
-                                                    <Image alt={time?.nome!} src={time?.imagem || IMAGEM_TIME_DEFAULT} fill className="object-contain" />
-                                                </div>
-                                                <div className="relative w-16 h-16">
-                                                    <Image alt={jogador.nome} src={jogador.imagem || IMAGEM_TIME_DEFAULT} fill className="object-cover" />
-                                                </div>
-                                                <div className="flex flex-col">
-                                                    <h2 className="font-heading text-2xl">{jogador.nome.split(' ')[0]}{" "}"{jogador.apelido}"{" "}{jogador.nome.split(' ')[0]}</h2>
-                                                    <span className="text-sm capitalize">{jogador.papel}</span>
-                                                </div>
-                                                <h2 className="ml-auto font-heading text-3xl">{pontuacao.total.toFixed(2)}</h2>
-                                            </div>
-                                        }>
-                                        <ul className="flex flex-col text-sm w-full px-4">
-                                            {renderizarCampoPontuacao('Kills', pontuacao?.kills.toFixed(1)!)}
-                                            {renderizarCampoPontuacao('Mortes', pontuacao?.deaths.toFixed(1)!)}
-                                            {renderizarCampoPontuacao('ADR', pontuacao?.adr.toFixed(1)!)}
-                                            {renderizarCampoPontuacao('Assistência', pontuacao?.assists.toFixed(1)!)}
-                                            {renderizarCampoPontuacao('Assistência Flash', pontuacao?.assistFlash.toFixed(1)!)}
-                                            {renderizarCampoPontuacao('Clutchs', pontuacao?.clutch.toFixed(1)!)}
-                                            {renderizarCampoPontuacao('Primeira Kill', pontuacao?.firstKills.toFixed(1)!)}
-                                            {renderizarCampoPontuacao('Primeira a Morrer', pontuacao?.firstDeaths.toFixed(1)!)}
-                                            {renderizarCampoPontuacao('Headshots', pontuacao?.headshots.toFixed(1)!)}
-                                            {renderizarCampoPontuacao('Traded', pontuacao?.traded.toFixed(1)!)}
-                                            {renderizarCampoPontuacao('Total', pontuacao?.total.toFixed(2)!)}
-                                        </ul>
-                                    </AccordionTab>
-                                )
-                            })}
-                        </Accordion>
+                                                                <h2 className="bg-white text-black text-center font-heading text-xl flex items-center justify-center md:text-2xl">
+                                                                    {jogador.apelido}
+                                                                </h2>
+
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation()
+                                                                        setFlippedJogadores(prev => prev === index ? null : index)
+                                                                    }}
+                                                                    className="absolute top-1 right-1 text-white bg-azul-escuro rounded-full p-1"
+                                                                >
+                                                                    <BsArrowRepeat />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* verso */}
+                                                        <div className="absolute w-full h-full backface-hidden rotate-y-180 bg-black text-white flex flex-col items-center justify-center">
+                                                            <div className="w-full h-full flex flex-col justify-center items-center">
+                                                                <h2 className="font-heading text-xl">Estatísticas</h2>
+                                                                <ul className="flex flex-col gap-1 text-sm w-full px-4">
+                                                                    {renderizarCampoPontuacao('Kills', media?.kills.toString()!, false)}
+                                                                    {renderizarCampoPontuacao('Mortes', media?.deaths.toString()!, false)}
+                                                                    {renderizarCampoPontuacao('ADR', media?.adr.toString()!, false)}
+                                                                    {renderizarCampoPontuacao('Assistência', media?.assists.toString()!, false)}
+                                                                    {renderizarCampoPontuacao('Assistência Flash', media?.assistFlash.toString()!, false)}
+                                                                    {renderizarCampoPontuacao('Clutchs', media?.clutchVitorias.toString()!, false)}
+                                                                    {renderizarCampoPontuacao('Primeira Kill', media?.firstKills.toString()!, false)}
+                                                                    {renderizarCampoPontuacao('Primeiro a Morrer', media?.firtsDeaths.toString()!, false)}
+                                                                    {renderizarCampoPontuacao('Headshots', media?.headshots.toString()!, false)}
+                                                                    {renderizarCampoPontuacao('Traded', media?.traded.toString()!, false)}
+                                                                </ul>
+                                                            </div>
+
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation()
+                                                                    setFlippedJogadores(prev => prev === index ? null : index)
+                                                                }}
+                                                                className="absolute top-2 right-2 text-white"
+                                                            >
+                                                                <BsArrowRepeat />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            )
+                                        })}
+                                    </ul>
+                                </div>
+                            ) : ''
+                        }
+                        {
+                            !podeEscalar ? (
+                                <div className="flex flex-col gap-4">
+                                    <h3 className="font-heading text-3xl">
+                                        Pontuação dos jogadores até o momento:
+                                    </h3>
+                                    {/* Accordion de pontuação */}
+                                    <Accordion>
+                                        {jogadoresOrdenados.map((jogador) => {
+                                            const time = getTeamById(jogador.timeAtual)
+                                            const pontuacao = getPontuacaoDetalhadaJogadorNoCampeonato(
+                                                idCampeonato,
+                                                jogador.apelido,
+                                                listaDeJogadores
+                                            )
+                                            return (
+                                                <AccordionTab
+                                                    key={jogador.id}
+                                                    header={
+                                                        <div className="flex items-center">
+                                                            <div className="relative w-8 h-8">
+                                                                <Image alt={time?.nome!} src={time?.imagem || IMAGEM_TIME_DEFAULT} fill className="object-contain" />
+                                                            </div>
+                                                            <div className="relative w-16 h-16">
+                                                                <Image alt={jogador.nome} src={jogador.imagem || IMAGEM_TIME_DEFAULT} fill className="object-cover" />
+                                                            </div>
+                                                            <div className="flex flex-col">
+                                                                <h2 className="font-heading text-2xl">{jogador.nome.split(' ')[0]}{" "}"{jogador.apelido}"{" "}{jogador.nome.split(' ')[0]}</h2>
+                                                                <span className="text-sm capitalize">{jogador.papel}</span>
+                                                            </div>
+                                                            <h2 className="ml-auto font-heading text-3xl">{pontuacao.total.toFixed(2)}</h2>
+                                                        </div>
+                                                    }>
+                                                    <ul className="flex flex-col text-sm w-full px-4">
+                                                        {renderizarCampoPontuacao('Kills', pontuacao?.kills.toFixed(1)!)}
+                                                        {renderizarCampoPontuacao('Mortes', pontuacao?.deaths.toFixed(1)!)}
+                                                        {renderizarCampoPontuacao('ADR', pontuacao?.adr.toFixed(1)!)}
+                                                        {renderizarCampoPontuacao('Assistência', pontuacao?.assists.toFixed(1)!)}
+                                                        {renderizarCampoPontuacao('Assistência Flash', pontuacao?.assistFlash.toFixed(1)!)}
+                                                        {renderizarCampoPontuacao('Clutchs', pontuacao?.clutch.toFixed(1)!)}
+                                                        {renderizarCampoPontuacao('Primeira Kill', pontuacao?.firstKills.toFixed(1)!)}
+                                                        {renderizarCampoPontuacao('Primeira a Morrer', pontuacao?.firstDeaths.toFixed(1)!)}
+                                                        {renderizarCampoPontuacao('Headshots', pontuacao?.headshots.toFixed(1)!)}
+                                                        {renderizarCampoPontuacao('Traded', pontuacao?.traded.toFixed(1)!)}
+                                                        {renderizarCampoPontuacao('Total', pontuacao?.total.toFixed(2)!)}
+                                                    </ul>
+                                                </AccordionTab>
+                                            )
+                                        })}
+                                    </Accordion>
+                                </div>
+                            ) : ''
+                        }
                     </div>
 
                     {/* Modal */}

@@ -37,6 +37,26 @@ export default function Page() {
 
     const [pickems, setPickems] = useState<any[]>([])
     const [campeonatos, setCampeonatos] = useState<any[]>([])
+    const [fantasys, setFantasys] = useState<any[]>([])
+
+    useEffect(() => {
+        if (!user?.id) return
+
+        async function fetchFantasys() {
+            const res = await fetch("/api/fantasy")
+            const data = await res.json()
+
+            const filtrados = data.filter((f: any) => {
+                console.log("COMPARE:", f.userId, user.id)
+                return f.userId === user.id
+            })
+            setFantasys(filtrados)
+        }
+
+        fetchFantasys()
+    }, [user])
+
+    console.log(fantasys)
 
     useEffect(() => {
         async function fetchPickems() {
@@ -67,9 +87,6 @@ export default function Page() {
         async function load() {
             const res = await fetch(`/api/user/${user.id}/comments`)
             const data = await res.json()
-
-            console.log("COMENTARIOS FRONT:", data) // 🔥 DEBUG
-
             setComentarios(data)
         }
 
@@ -81,7 +98,6 @@ export default function Page() {
             fetch("/api/user")
                 .then(res => res.json())
                 .then(data => {
-                    console.log("USER API:", data)
                     setUser(data)
                 })
         }
@@ -95,6 +111,7 @@ export default function Page() {
             setNickname(user.nickname || "")
         }
     }, [user])
+
 
     if (status === "loading") {
         return <p>carregando sessão...</p>
@@ -187,7 +204,6 @@ export default function Page() {
             // salva no usuário
             await handleUpdate("image", data.url)
         }
-        console.log(data.url)
     }
 
     return (
@@ -359,7 +375,7 @@ export default function Page() {
                     }
                 </div>
                 <div className="flex flex-col gap-4 w-full col-start-1 col-end-3">
-                    <h3 className="font-heading text-3xl">Comentarios que voce ja fez:</h3>
+                    <h3 className="font-heading text-3xl">Pick'ems feitos:</h3>
                     {
                         pickems.length > 0 ? (
                             <Swiper
@@ -390,9 +406,63 @@ export default function Page() {
                             >
                                 {pickems.map((pickem) => {
                                     const campAtual = campeonatos.find(camp => camp.id === pickem.campeonatoId)
+                                    if (!campAtual) return null
                                     return (
                                         <SwiperSlide key={pickem.id}>
                                             <Link href={`/pickem/${campAtual.slugId}`}>
+                                                <div className='relative w-full h-[200px] rounded-t-xl overflow-hidden'>
+                                                    <Image alt={`${campAtual.nome}`} src={campAtual.imagem} fill className='object-cover' />
+                                                </div>
+                                                <h2 className='text-center font-heading text-4xl truncate bg-zinc-950 w-full flex justify-center items-center text-white pt-1 rounded-b-xl'>{campAtual.nome}</h2>
+                                            </Link>
+                                        </SwiperSlide>
+                                    )
+                                })}
+                            </Swiper>
+                        ) : (
+                            <div className="flex justify-center items-center text-center">
+                                <h3>Você ainda não fez nenhum comentário!</h3>
+                            </div>
+                        )
+                    }
+                </div>
+                <div className="flex flex-col gap-4 w-full col-start-1 col-end-3">
+                    <h3 className="font-heading text-3xl">Fantasys feitos:</h3>
+                    {
+                        fantasys.length > 0 ? (
+                            <Swiper
+                                modules={[Autoplay, Pagination, Navigation]}
+                                slidesPerView={1}
+                                loop
+                                autoplay={{
+                                    delay: 5000,
+                                    disableOnInteraction: false,
+                                }}
+                                breakpoints={{
+                                    0: {
+                                        slidesPerView: 1,
+                                        spaceBetween: 10,
+                                    },
+                                    1024: {
+                                        slidesPerView: 2,
+                                        spaceBetween: 15,
+                                    },
+                                    1440: {
+                                        slidesPerView: 3,
+                                        spaceBetween: 15,
+                                    },
+                                }}
+                                pagination={{ clickable: true }}
+                                navigation
+                                className="w-full h-full"
+                            >
+                                {fantasys.map((pickem, i) => {
+                                    const campAtual = campeonatos.find(camp => camp.id === pickem.campeonatoId)
+                                    if (!campAtual) return null
+                                    console.log(campAtual)
+                                    return (
+                                        <SwiperSlide key={i}>
+                                            <Link href={`/menu/fantasy/${campAtual.slugId}`}>
                                                 <div className='relative w-full h-[200px] rounded-t-xl overflow-hidden'>
                                                     <Image alt={`${campAtual.nome}`} src={campAtual.imagem} fill className='object-cover' />
                                                 </div>

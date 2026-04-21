@@ -85,8 +85,8 @@ export default function NoticiasDoCampeonato({ campeonato }: NoticiasDoCampeonat
                                 />
                             ))
                     ) : (
-                        <li className="text-black">
-                            <p className="font-heading text-2xl text-center mt-4">Nenhuma notícia encontrada!</p>
+                        <li className="w-full h-[200px] bg-zinc-600 flex justify-center items-center rounded-md">
+                            <p className="font-heading text-4xl text-center">Nenhuma notícia encontrada!</p>
                         </li>
                     )
                 }

@@ -20,7 +20,6 @@ import ClassificacaoFinal from "@/src/components/paginaCompeticao/ClassificacaoF
 import NoticiasDoCampeonato from "@/src/components/paginaCompeticao/NoticiasDoCampeonato"
 import EstatisticasDosJogadores from "@/src/components/paginaCompeticao/EstatisticasDosJogadores"
 import BannerPickem from "@/src/components/paginaCompeticao/BannerPickem"
-import Comentario from "@/src/components/comentario/Comentario"
 import CampeonatoRelacionado from "@/src/components/paginaCompeticao/CampeonatoRelacionado"
 import { IMAGEM_TROFEU_DEFAULT } from "@/src/assets/imagens"
 
@@ -92,7 +91,7 @@ export default function PaginaCampeonatoClient({ idCampeonato }: Props) {
                 <DadosDoCampeonato campeonato={campeonatoAtual} />
                 <JogosDoCampeonato partidas={partidasDoCampeonato} />
                 <CampeonatoRelacionado campeonatoAtual={campeonatoAtual} />
-                <div className={`lg:grid lg:grid-cols-2 lg:gap-10 ${campeonatoAtual.formato === 'gsl-format' || campeonatoAtual.formato === 'playoff' || campeonatoAtual.formato === 'gsl-format-playoff' ? ('2xl:grid-cols-[700px_1fr]') : ('2xl:grid-cols-3')}`}>
+                <div className={`lg:grid lg:grid-cols-2 lg:gap-10 ${campeonatoAtual.formato === 'gsl-format' || campeonatoAtual.formato === 'playoff' || campeonatoAtual.formato === 'gsl-format-playoff' || campeonatoAtual.formato === 'gsl-format-simple' ? ('2xl:grid-cols-[700px_1fr]') : ('2xl:grid-cols-3')}`}>
                     <TabelaDoCampeonato campeonato={campeonatoAtual} />
                     <NoticiasDoCampeonato campeonato={campeonatoAtual}/>
                 </div>

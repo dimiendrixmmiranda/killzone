@@ -595,6 +595,143 @@ export default function TabelaDoCampeonato({ campeonato }: TabelaDoCampeonatoPro
                         }
                     </div>
                 )
+            case 'gsl-format-simple':
+                {
+                    const [activeGrupo, setActiveGrupo] = useState<'grupo-a' | 'grupo-b'>('grupo-a')
+
+
+                    const partidasAtivasLower1 = activeGrupo === 'grupo-a' ?
+                        partidas.filter(partida => partida.fase === 'lower-1' && partida.grupo === 'a') :
+                        partidas.filter(partida => partida.fase === 'lower-1' && partida.grupo === 'b')
+
+                    const partidasAtivasSemifinais = activeGrupo === 'grupo-a' ?
+                        partidas.filter(partida => partida.fase === 'semifinal' && partida.grupo === 'a') :
+                        partidas.filter(partida => partida.fase === 'semifinal' && partida.grupo === 'b')
+
+                    const partidasAtivasLower2 = activeGrupo === 'grupo-a' ?
+                        partidas.filter(partida => partida.fase === 'lower-2' && partida.grupo === 'a') :
+                        partidas.filter(partida => partida.fase === 'lower-2' && partida.grupo === 'b')
+
+                    const partidasAtivasFinal = activeGrupo === 'grupo-a' ?
+                        partidas.filter(partida => partida.fase === 'final' && partida.grupo === 'a') :
+                        partidas.filter(partida => partida.fase === 'final' && partida.grupo === 'b')
+
+                    const partidasAtivasLowerFinal = activeGrupo === 'grupo-a' ?
+                        partidas.filter(partida => partida.fase === 'lower-final' && partida.grupo === 'a') :
+                        partidas.filter(partida => partida.fase === 'lower-final' && partida.grupo === 'b')
+
+
+                    return (
+                        <div className="flex flex-col gap-4">
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setActiveGrupo('grupo-a')}
+                                    className={`px-2 py-1 rounded-md cursor-pointer ${activeGrupo === 'grupo-a' ? 'bg-magenta text-white' : 'bg-azul-escuro text-white'
+                                        }`}
+                                    style={{ textShadow: '1px 1px 2px black' }}
+                                >
+                                    Grupo A
+                                </button>
+
+                                <button
+                                    onClick={() => setActiveGrupo('grupo-b')}
+                                    className={`px-2 py-1 rounded-md cursor-pointer ${activeGrupo === 'grupo-b' ? 'bg-magenta text-white' : 'bg-azul-escuro text-white'
+                                        }`}
+                                    style={{ textShadow: '1px 1px 2px black' }}
+                                >
+                                    Grupo B
+                                </button>
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                {/* Upper */}
+                                <div className="flex flex-col gap-2 overflow-x-scroll pb-4 2xl:overflow-hidden">
+                                    <h2 className="font-heading text-2xl uppercase w-fit bg-green-600 px-2 text-white" style={{ textShadow: '1px 1px 2px black' }}>Upper</h2>
+                                    <div className="flex">
+                                        {/* semifinal */}
+                                        {
+                                            partidasSemifinal.length > 0 ? (
+                                                <ul className="flex flex-col justify-around gap-10">
+                                                    <li>
+                                                        {
+                                                            cardPlayoff(false, false, 0, false, 0, true, false, 0, true, 80, partidasAtivasSemifinais[0])
+                                                        }
+                                                    </li>
+                                                    <li>
+                                                        {
+                                                            cardPlayoff(false, false, 0, false, 0, true, true, 80, false, 0, partidasAtivasSemifinais[1])
+                                                        }
+                                                    </li>
+                                                </ul>
+                                            ) : (
+                                                <ul className="flex flex-col justify-around gap-10">
+                                                    <li>
+                                                        {
+                                                            cardPlayoff(false, false, 0, false, 0, true, false, 0, true, 80)
+                                                        }
+                                                    </li>
+                                                    <li>
+                                                        {
+                                                            cardPlayoff(false, false, 0, false, 0, true, true, 80, false, 0)
+                                                        }
+                                                    </li>
+                                                </ul>
+                                            )
+                                        }
+                                        {/* final */}
+                                        {
+                                            partidaFinal.length > 0 ? (
+                                                <ul className="flex flex-col gap-10 justify-center">
+                                                    <li>
+                                                        {
+                                                            cardPlayoff(true, true, 80, true, 80, false, false, 0, false, 0, partidasAtivasFinal[0])
+                                                        }
+                                                    </li>
+                                                </ul>
+                                            ) : (
+                                                <ul className="flex flex-col gap-10 justify-center">
+                                                    <li>
+                                                        {
+                                                            cardPlayoff(true, true, 80, true, 80, false, false, 0, false, 0)
+                                                        }
+                                                    </li>
+                                                </ul>
+
+                                            )
+                                        }
+                                    </div>
+                                </div>
+                                {/* Lower */}
+                                <div className="flex flex-col gap-2 overflow-x-scroll pb-4 2xl:overflow-hidden">
+                                    {/* round 1 lower */}
+                                    <h2 className="font-heading text-2xl uppercase w-fit bg-red-600 px-2 text-white " style={{ textShadow: '1px 1px 2px black' }}>Lower</h2>
+                                    <div className="flex">
+                                        {/* round lower final */}
+                                        {
+                                            partidaFinal.length > 0 ? (
+                                                <ul className="flex flex-col gap-10 justify-center">
+                                                    <li>
+                                                        {
+                                                            cardPlayoff(false, true, 75, true, 75, false, false, 0, false, 0, partidasAtivasLowerFinal[0])
+                                                        }
+                                                    </li>
+                                                </ul>
+                                            ) : (
+                                                <ul className="flex flex-col gap-10 justify-center">
+                                                    <li>
+                                                        {
+                                                            cardPlayoff(false, true, 75, true, 75, false, false, 0, false, 0)
+                                                        }
+                                                    </li>
+                                                </ul>
+
+                                            )
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                }
             case 'playoff':
                 return (
                     <div className={`flex flex-col`}>
@@ -789,7 +926,7 @@ export default function TabelaDoCampeonato({ campeonato }: TabelaDoCampeonatoPro
     }
 
     return (
-        <div className={`flex flex-col gap-3 w-full ${campeonato.formato === 'gsl-format' || campeonato.formato === 'gsl-format-playoff' || campeonato.formato === 'playoff' ? 'col-start-1 col-end-3': '2xl:col-start-1 2xl:col-end-2'}`}>
+        <div className={`flex flex-col gap-3 w-full ${campeonato.formato === 'gsl-format' || campeonato.formato === 'gsl-format-playoff' || campeonato.formato === 'playoff' ? 'col-start-1 col-end-3' : '2xl:col-start-1 2xl:col-end-2'}`}>
             <h3 className="font-heading text-3xl">Tabela Do Campeonato</h3>
             {
                 campeonato?.formato && identificarTipoCampeonato(campeonato?.formato, campeonato)
