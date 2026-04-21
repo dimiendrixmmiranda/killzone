@@ -52,10 +52,10 @@ export default function ClassificacaoFinal({ idCampeonato }: ClassificacaoFinalP
                 return (
                     setClassificacao(getClassificacaoDoubleElimination(campeonatoAtual))
                 )
-            // case 'gsl-format-playoff':
-            //     return (
-            //         setClassificacao(getClassificacaoDobleEliminationPlayoff(idCampeonato))
-            //     )
+            case 'gsl-format-playoff':
+                return (
+                    setClassificacao(getClassificacaoDobleEliminationPlayoff(campeonatoAtual))
+                )
 
             default:
                 break;
@@ -185,9 +185,9 @@ export default function ClassificacaoFinal({ idCampeonato }: ClassificacaoFinalP
                                     const indexDentroDoGrupo = primeiros.findIndex(t => t.timeId === timeClassificacao.timeId)
 
                                     if (indexDentroDoGrupo === 0) {
-                                        posicaoGrid = 'lg:col-start-1 lg:col-end-3'
+                                        posicaoGrid = 'lg:col-span-6'
                                     } else if (indexDentroDoGrupo === 1) {
-                                        posicaoGrid = 'lg:col-start-3 lg:col-end-5'
+                                        posicaoGrid = 'lg:col-span-6'
                                     }
                                     break;
                                 }
@@ -198,9 +198,65 @@ export default function ClassificacaoFinal({ idCampeonato }: ClassificacaoFinalP
                                         const indexDentroDoGrupo = primeiros.findIndex(t => t.timeId === timeClassificacao.timeId)
 
                                         if (indexDentroDoGrupo === 0) {
-                                            posicaoGrid = 'lg:col-start-1 lg:col-end-3'
+                                            if (campeonatoAtual?.formato === 'gsl-format') {
+                                                posicaoGrid = 'lg:col-span-3'
+                                            } else {
+                                                posicaoGrid = 'lg:col-span-4'
+                                            }
                                         } else if (indexDentroDoGrupo === 1) {
-                                            posicaoGrid = 'lg:col-start-3 lg:col-end-5'
+                                            if (campeonatoAtual?.formato === 'gsl-format') {
+                                                posicaoGrid = 'lg:col-span-3'
+                                            } else {
+                                                posicaoGrid = 'lg:col-span-4'
+                                            }
+                                        }
+                                        break;
+                                    }
+                                case '5º/6º':
+                                    {
+                                        const primeiros = classificacao.filter(t => t.resultadoSuica === '5º/6º')
+                                        const indexDentroDoGrupo = primeiros.findIndex(t => t.timeId === timeClassificacao.timeId)
+
+                                        if (indexDentroDoGrupo === 0) {
+                                            if (campeonatoAtual?.formato === 'gsl-format') {
+                                                posicaoGrid = 'lg:col-span-3'
+                                            } else {
+                                                posicaoGrid = 'lg:col-span-6'
+                                            }
+                                        } else if (indexDentroDoGrupo === 1) {
+                                            if (campeonatoAtual?.formato === 'gsl-format') {
+                                                posicaoGrid = 'lg:col-span-3'
+                                            } else {
+                                                posicaoGrid = 'lg:col-span-6'
+                                            }
+                                        }
+                                        break;
+                                    }
+                                case '7º/8º':
+                                    {
+                                        const primeiros = classificacao.filter(t => t.resultadoSuica === '7º/8º')
+                                        const indexDentroDoGrupo = primeiros.findIndex(t => t.timeId === timeClassificacao.timeId)
+
+                                        if (indexDentroDoGrupo === 0) {
+                                            posicaoGrid = 'lg:col-span-6'
+                                        } else if (indexDentroDoGrupo === 1) {
+                                            posicaoGrid = 'lg:col-span-6'
+                                        }
+                                        break;
+                                    }
+                                case '9º/12º':
+                                    {
+                                        const primeiros = classificacao.filter(t => t.resultadoSuica === '9º/12º')
+                                        const indexDentroDoGrupo = primeiros.findIndex(t => t.timeId === timeClassificacao.timeId)
+                                        console.log(primeiros)
+                                        if (indexDentroDoGrupo === 0) {
+                                            posicaoGrid = 'lg:col-span-3'
+                                        } else if (indexDentroDoGrupo === 1) {
+                                            posicaoGrid = 'lg:col-span-3'
+                                        } else if (indexDentroDoGrupo === 2) {
+                                            posicaoGrid = 'lg:col-span-3'
+                                        } else if (indexDentroDoGrupo === 3) {
+                                            posicaoGrid = 'lg:col-span-3'
                                         }
                                         break;
                                     }
@@ -224,7 +280,6 @@ export default function ClassificacaoFinal({ idCampeonato }: ClassificacaoFinalP
                                 case '9º/12º':
                                     {
                                         const primeiros = classificacao.filter(t => t.resultadoSuica === '9º/12º')
-                                        console.log(primeiros)
                                         const indexDentroDoGrupo = primeiros.findIndex(t => t.timeId === timeClassificacao.timeId)
 
                                         if (indexDentroDoGrupo === 0) {
@@ -241,8 +296,6 @@ export default function ClassificacaoFinal({ idCampeonato }: ClassificacaoFinalP
                                 default:
                                     break;
                             }
-                            console.log(timeClassificacao)
-                            console.log(i)
                             return (
                                 <div key={i} className={`${posicaoGrid}`} style={{ textShadow: '1px 1px 2px black' }}>
                                     {
@@ -276,6 +329,7 @@ export default function ClassificacaoFinal({ idCampeonato }: ClassificacaoFinalP
                                                     ${campeonatoAtual?.formato === 'suico' && i < 8 && timeClassificacao.encerrouParticipacao ? 'bg-green-600!' : ''}
                                                     ${campeonatoAtual?.formato === 'suico' && i >= 8 && timeClassificacao.encerrouParticipacao ? 'bg-red-600!' : ''}
                                                     ${campeonatoAtual?.formato === 'gsl-format' && i >= 6 && timeClassificacao.encerrouParticipacao ? 'bg-red-600!' : ''}
+                                                    ${campeonatoAtual?.formato === 'gsl-format' && i <= 6 && timeClassificacao.encerrouParticipacao ? 'bg-green-600!' : ''}
                                                 `}
                                             >
                                                 <div className="flex flex-col justify-center items-center gap-1 xl:flex-row xl:w-full">

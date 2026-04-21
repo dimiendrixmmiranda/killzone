@@ -27,11 +27,19 @@ export default function NoticiasDoCampeonato({ campeonato }: NoticiasDoCampeonat
         })
     }
 
-    useEffect(() =>{
-        if(isXl){
+    useEffect(() => {
+        if (campeonato.formato === 'gsl-format') {
+            setRows(4)
+        } else if (campeonato.formato === 'gsl-format-playoff') {
+            setRows(3)
+        } else if (campeonato.formato === 'suico') {
+            setRows(3)
+        } else if (campeonato.formato === 'playoff') {
+            setRows(3)
+        } else {
             setRows(3)
         }
-    },[isSm, isMd, isLg, isXl, is2xl])
+    }, [campeonato])
 
     useEffect(() => {
         setFirst(0)
@@ -59,7 +67,7 @@ export default function NoticiasDoCampeonato({ campeonato }: NoticiasDoCampeonat
     }, [campeonato])
 
     return (
-        <div className={`flex flex-col text-white mt-6 w-full overflow-hidden lg:mt-0  ${campeonato.formato === 'gsl-format' || campeonato.formato === 'playoff' ? 'col-start-3 col-end-4': '2xl:col-start-2 2xl:col-end-4'}`}>
+        <div className={`flex flex-col text-white mt-6 w-full overflow-hidden lg:mt-0  ${campeonato.formato === 'gsl-format' || campeonato.formato === 'gsl-format-playoff' || campeonato.formato === 'playoff' ? 'col-start-3 col-end-4' : '2xl:col-start-2 2xl:col-end-4'}`}>
             <h3 className="font-heading text-3xl text-black">Notícias Do Campeonato</h3>
             <ul className="flex flex-col gap-4 ">
                 {

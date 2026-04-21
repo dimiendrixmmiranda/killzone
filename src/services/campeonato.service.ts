@@ -408,8 +408,6 @@ export function getClassificacaoFinalSuica(campeonato: Campeonato) {
     const tabela = getTabelaByCampeonatoId(campeonato) ?? []
     const timesIds = campeonato.timesIds ?? []
 
-    console.log(timesIds)
-
     if (!timesIds.length) return []
 
     const resultado = timesIds.map(timeId => {
@@ -839,13 +837,11 @@ export function getClassificacaoDoubleElimination(campeonato: Campeonato) {
     }))
 }
 
-export function getClassificacaoDobleEliminationPlayoff(campeonatoId: string) {
-
+export function getClassificacaoDobleEliminationPlayoff(campeonatoAtual: Campeonato) {
     const partidas =
-        getPartidasByCampeonato(campeonatoId)
+        getPartidasByCampeonato(campeonatoAtual.slugId!)
             ?.filter(p => p.situacao === "finalizado") ?? []
-
-    const timesIds = getTimesByCampeonatoId(campeonatoId) ?? []
+    const timesIds = campeonatoAtual.timesIds ?? []
 
     if (!timesIds.length) return []
 

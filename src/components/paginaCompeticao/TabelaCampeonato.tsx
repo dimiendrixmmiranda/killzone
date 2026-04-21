@@ -789,7 +789,7 @@ export default function TabelaDoCampeonato({ campeonato }: TabelaDoCampeonatoPro
     }
 
     return (
-        <div className={`flex flex-col gap-3 w-full ${campeonato.formato === 'gsl-format' || campeonato.formato === 'playoff' ? 'col-start-1 col-end-3': '2xl:col-start-1 2xl:col-end-2'}`}>
+        <div className={`flex flex-col gap-3 w-full ${campeonato.formato === 'gsl-format' || campeonato.formato === 'gsl-format-playoff' || campeonato.formato === 'playoff' ? 'col-start-1 col-end-3': '2xl:col-start-1 2xl:col-end-2'}`}>
             <h3 className="font-heading text-3xl">Tabela Do Campeonato</h3>
             {
                 campeonato?.formato && identificarTipoCampeonato(campeonato?.formato, campeonato)
