@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { campeonatos } from "../data/campeonato/campeonato.data"
 import { players } from "../data/players/players.data";
 import { teams } from "../data/teams/teams.data";
 import { Campeonato } from "../domain/Campeonato";
@@ -169,17 +168,13 @@ export function getMapasMaisJogadas(partidas: Partida[]) {
 
 
 
-export function getAllCampeonatos() {
-    return campeonatos
-}
+// export function getAllCampeonatos() {
+//     return campeonatos
+// }
 
-export function getCampeonatoById(id: string) {
-    return campeonatos.find(c => c.id === id)
-}
-
-export function getTimesByCampeonatoId(campeonatoId: string) {
-    return campeonatos.find(c => c.id === campeonatoId)?.timesIds
-}
+// export function getTimesByCampeonatoId(campeonatoId: string) {
+//     return campeonatos.find(c => c.id === campeonatoId)?.timesIds
+// }
 
 export function getCampeaoEVice(partidas: Partida[]) {
     const final = partidas.find(p => p.fase === "final");
@@ -1034,27 +1029,18 @@ export function getSituacaoCampeonato(
 }
 
 
-export function useCampeonatos() {
-    const [campeonatos, setCampeonatos] = useState<any[]>([])
 
-    useEffect(() => {
-        async function fetchCampeonatos() {
-            const res = await fetch("/api/campeonatos")
-            const data = await res.json()
-            setCampeonatos(data)
-        }
 
-        fetchCampeonatos()
-    }, [])
-
-    return campeonatos
+// outras funções
+export function getCampeonatoById(id: string, campeonatos: Campeonato[]) {
+    return campeonatos.find(c => String(c.id) === String(id))
 }
 
 export function getCampeonatosRelacionados(
-    campeonatos: any[],
+    campeonatos: Campeonato[],
     ids: string[]
 ) {
     return campeonatos.filter(camp =>
-        ids.includes(camp.slugId)
+        ids.includes(camp.slugId!)
     )
 }

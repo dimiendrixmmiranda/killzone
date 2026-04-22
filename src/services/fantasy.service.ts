@@ -256,3 +256,35 @@ export function getPontuacaoDetalhadaJogadorNoCampeonato(
     const jogos = getEstatisticasJogadorNoCampeonato(campeonatoId, jogadorId)
     return calcularPontuacaoJogadorNormal(jogos)
 }
+
+
+export function calcularPontuacaoTotalTime(
+    timeFantasy: any[] = [],
+    idCampeonato: string,
+    jogadores: Jogador[]
+) {
+    return timeFantasy.reduce((total, slot) => {
+        if (!slot?.jogador) return total
+
+        const pontuacao = getPontuacaoDetalhadaJogadorNoCampeonato(
+            idCampeonato,
+            slot.jogador.apelido,
+            jogadores
+        )
+
+        let pontos = pontuacao?.total ?? 0
+
+        if (slot.capitao) {
+            pontos *= 2
+        }
+
+        return total + pontos
+    }, 0)
+}
+
+export function encerramentoDaEscalacaoDoFantasy(dataInicio: string | Date) {
+    const agora = new Date()
+    const inicio = new Date(dataInicio)
+
+    return agora < inicio
+}

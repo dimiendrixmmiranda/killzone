@@ -11,7 +11,7 @@ export async function PUT(req: Request) {
         }
 
 
-        const { name, email, phone, nickname, image } = await req.json()
+        const { name, email, phone, nickname, image, badge } = await req.json()
 
         const updatedUser = await prisma.user.update({
             where: { email: session.user.email },
@@ -21,6 +21,7 @@ export async function PUT(req: Request) {
                 ...(phone !== undefined && { phone }),
                 ...(image !== undefined && { image }),
                 ...(nickname !== undefined && { nickname }),
+                ...(badge !== undefined && { badge }),
             }
         })
 

@@ -5,7 +5,6 @@ import { Campeonato } from "@/src/domain/Campeonato"
 import { Partida } from "@/src/domain/Partida"
 import { Time } from "@/src/domain/Time"
 
-import { getAllCampeonatos } from "@/src/services/campeonato.service"
 import { getPartidasByCampeonato } from "@/src/services/partidas.service"
 import { useEffect, useMemo, useState } from "react"
 import { getTeamById } from "@/src/services/team.service"

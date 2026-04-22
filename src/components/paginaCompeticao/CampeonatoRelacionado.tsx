@@ -1,6 +1,7 @@
 import { IMAGEM_TROFEU_DEFAULT } from "@/src/assets/imagens"
 import { Campeonato } from "@/src/domain/Campeonato"
-import { getCampeonatoById, getCampeonatosRelacionados, useCampeonatos } from "@/src/services/campeonato.service"
+import { useCampeonatos } from "@/src/hooks/useCampeonatos"
+import { getCampeonatoById, getCampeonatosRelacionados } from "@/src/services/campeonato.service"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -10,8 +11,8 @@ interface CampeonatoRelacionadoProps {
 
 export default function CampeonatoRelacionado({ campeonatoAtual }: CampeonatoRelacionadoProps) {
     if (!campeonatoAtual.campeonatosRelacionados) return
-    const campeonatos = useCampeonatos()
-
+    const { campeonatos } = useCampeonatos()
+    
     const relacionados = getCampeonatosRelacionados(
         campeonatos,
         campeonatoAtual.campeonatosRelacionados ?? []

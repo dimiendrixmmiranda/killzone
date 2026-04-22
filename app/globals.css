@@ -170,3 +170,10 @@ body {
 .hover\:rotate-y-180:hover {
   transform: rotateY(180deg);
 }
+
+.overlay-custom:before {
+    border-bottom-color: var(--color-magenta) !important; /* blue-900 */
+}
+.overlay-custom:after {
+    border-bottom-color: var(--color-magenta) !important; /* blue-900 */
+}

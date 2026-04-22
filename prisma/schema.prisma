@@ -17,6 +17,7 @@ model User {
   githubId  String?   @unique
   nick      String?   @unique
   image     String?
+  badge     String?
   createdAt DateTime  @default(now())
   comments  Comment[]
   votes     Vote[]

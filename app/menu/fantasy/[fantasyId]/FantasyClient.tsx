@@ -16,19 +16,13 @@ import { ImTarget } from "react-icons/im"
 import { RiDeleteBin6Fill, RiDeleteBin7Fill } from "react-icons/ri"
 import { TbCircleLetterCFilled } from "react-icons/tb"
 import { Accordion, AccordionTab } from 'primereact/accordion';
-import { getPontuacaoDetalhadaJogadorNoCampeonato } from "@/src/services/fantasy.service"
+import { encerramentoDaEscalacaoDoFantasy, getPontuacaoDetalhadaJogadorNoCampeonato } from "@/src/services/fantasy.service"
+import { Posicao } from "@/src/domain/Posicao"
 
 
 interface FantasyClientProps {
     idCampeonato: string
 }
-
-type Posicao =
-    | "awper"
-    | "igl"
-    | "rifler"
-    | "entry"
-    | "coach"
 
 type Slot = {
     posicao: Posicao
@@ -70,7 +64,7 @@ export default function FantasyClient({ idCampeonato }: FantasyClientProps) {
     const camposRef = useRef<Array<HTMLLIElement | null>>([])
 
     useEffect(() => {
-        const podeEscalar = podeEscalarFantasy(campeonatoAtual?.inicio!)
+        const podeEscalar = encerramentoDaEscalacaoDoFantasy(campeonatoAtual?.inicio!)
         setPodeEscalar(podeEscalar)
     }, [campeonatoAtual])
 
@@ -439,13 +433,6 @@ export default function FantasyClient({ idCampeonato }: FantasyClientProps) {
 
             return total + pontos
         }, 0)
-    }
-
-    function podeEscalarFantasy(dataInicio: string | Date) {
-        const agora = new Date()
-        const inicio = new Date(dataInicio)
-
-        return agora < inicio
     }
 
     if (listaDeJogadoresDisponiveis.length <= 0) {

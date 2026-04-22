@@ -8,9 +8,9 @@ import { useMemo } from "react";
 import Image from "next/image";
 import CardNoticia from "@/src/components/cardNoticia/CardNoticia";
 import Link from "next/link";
-import { getAllCampeonatos } from "@/src/services/campeonato.service";
 import { getAllPartidas } from "@/src/services/partidas.service";
 import CardPartida from "@/src/components/cardPartida/CardPartida";
+import { useCampeonatos } from "@/src/hooks/useCampeonatos";
 
 interface Props {
     termo: string;
@@ -20,13 +20,12 @@ export default function ResultadoBuscaClient({ termo }: Props) {
     if (!termo) {
         return <p>Nenhum termo informado.</p>
     }
-
+    const { campeonatos } = useCampeonatos()
     const termoLower = termo.toLowerCase();
 
     const times = getAllTeams()
     const jogadores = getAllPlayers()
     const noticias = getAllNews()
-    const campeonatos = getAllCampeonatos()
     const partidas = getAllPartidas()
 
     const timesAchados = times.filter(time =>

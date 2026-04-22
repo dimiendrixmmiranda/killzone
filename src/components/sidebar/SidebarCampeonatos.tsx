@@ -1,8 +1,4 @@
 'use client'
-
-import { useState } from "react"
-import { getAllCampeonatos } from "@/src/services/campeonato.service"
-import CardCompeticao from "../cardCompeticao/CardCompeticao"
 import Campeonato from "../campeonato/Campeonato"
 
 export default function SidebarCampeonatos() {
